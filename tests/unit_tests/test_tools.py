@@ -1,37 +1,55 @@
 from typing import Type
 
-from langchain_scrapeless.tools import ScrapelessUniversalScrapingTool
+from langchain_scrapeless.tools import (
+    ScrapelessUniversalScrapingTool,
+    ScrapelessDeepSerpGoogleSearchTool,
+)
 from langchain_tests.unit_tests import ToolsUnitTests
 
 
-class TestParrotMultiplyToolUnit(ToolsUnitTests):
-    @property
-    def tool_constructor(self) -> Type[ScrapelessUniversalScrapingTool]:
-        return ScrapelessUniversalScrapingTool
+def create_tool_test_class(name, tool_cls, example_args):
+    class _TestTool(ToolsUnitTests):
+        @property
+        def tool_constructor(self):
+            return tool_cls
 
-    @property
-    def tool_constructor_params(self) -> dict:
-        # if your tool constructor instead required initialization arguments like
-        # `def __init__(self, some_arg: int):`, you would return those here
-        # as a dictionary, e.g.: `return {'some_arg': 42}`
-        return {}
+        @property
+        def tool_constructor_params(self):
+            return {}
 
-    @property
-    def tool_invoke_params_example(self) -> dict:
-        """
-        Returns a dictionary representing the "args" of an example tool call.
+        @property
+        def tool_invoke_params_example(self):
+            return example_args
 
-        This should NOT be a ToolCall dict - i.e. it should not
-        have {"name", "id", "args"} keys.
-        """
-        return {
-            "url": "https://example.com",
-            "headless": True,
-            "js_render": True,
-            "js_wait_until": "domcontentloaded",
-            "outputs": None,
-            "response_type": "html",
-            "response_image_full_page": False,
-            "selector": None,
-            "proxy_country": "ANY",
-        }
+    _TestTool.__name__ = name
+    return _TestTool
+
+
+TestScrapelessTool = create_tool_test_class(
+    "TestScrapelessTool",
+    ScrapelessUniversalScrapingTool,
+    {
+        "url": "https://example.com",
+        "headless": True,
+        "js_render": True,
+        "js_wait_until": "domcontentloaded",
+        "outputs": None,
+        "response_type": "html",
+        "response_image_full_page": False,
+        "selector": None,
+        "proxy_country": "ANY",
+    },
+)
+
+TestGoogleSearchTool = create_tool_test_class(
+    "TestGoogleSearchTool",
+    ScrapelessDeepSerpGoogleSearchTool,
+    {
+        "q": "AI news",
+        "hl": "en",
+        "gl": "us",
+        "google_domain": "google.com",
+        "start": 0,
+        "num": 10,
+    },
+)
