@@ -163,34 +163,6 @@ class ScrapelessUniversalScrapingTool(BaseTool):
     args_schema: Type[BaseModel] = ScrapelessUniversalScrapingInput
     handle_tool_error: bool = True
 
-    headless: bool = True
-    js_render: bool = True
-    js_wait_until: Optional[
-        Literal["load", "domcontentloaded", "networkidle0", "networkidle2"]
-    ] = "domcontentloaded"
-    outputs: Optional[
-        Literal[
-            "phone_numbers",
-            "headings",
-            "images",
-            "audios",
-            "videos",
-            "links",
-            "menus",
-            "hashtags",
-            "emails",
-            "metadata",
-            "tables",
-            "favicon",
-        ]
-    ] = None
-    response_type: Optional[Literal["html", "plaintext", "markdown", "png", "jpeg"]] = (
-        "html"
-    )
-    response_image_full_page: Optional[bool] = False
-    selector: Optional[str] = None
-    proxy_country: Optional[str] = "ANY"
-
     scrapeless_universal_scraping_api_wrapper: ScrapelessUniversalScrapingAPIWrapper = (
         Field(default_factory=ScrapelessUniversalScrapingAPIWrapper)
     )
@@ -226,68 +198,49 @@ class ScrapelessUniversalScrapingTool(BaseTool):
         super().__init__(**kwargs)
 
     def _run(
-            self,
-            url: str,
-            headless: Optional[bool] = None,
-            js_render: Optional[bool] = None,
-            js_wait_until: Optional[
-                Literal["load", "domcontentloaded", "networkidle0", "networkidle2"]
-            ] = None,
-            outputs: Optional[
-                Literal[
-                    "phone_numbers",
-                    "headings",
-                    "images",
-                    "audios",
-                    "videos",
-                    "links",
-                    "menus",
-                    "hashtags",
-                    "emails",
-                    "metadata",
-                    "tables",
-                    "favicon",
-                ]
-            ] = None,
-            response_type: Optional[
-                Literal["html", "plaintext", "markdown", "png", "jpeg"]
-            ] = None,
-            response_image_full_page: Optional[bool] = None,
-            selector: Optional[str] = None,
-            proxy_country: Optional[str] = None,
+        self,
+        url: str,
+        headless: Optional[bool] = True,
+        js_render: Optional[bool] = True,
+        js_wait_until: Optional[
+            Literal["load", "domcontentloaded", "networkidle0", "networkidle2"]
+        ] = "domcontentloaded",
+        outputs: Optional[
+            Literal[
+                "phone_numbers",
+                "headings",
+                "images",
+                "audios",
+                "videos",
+                "links",
+                "menus",
+                "hashtags",
+                "emails",
+                "metadata",
+                "tables",
+                "favicon",
+            ]
+        ] = None,
+        response_type: Optional[
+            Literal["html", "plaintext", "markdown", "png", "jpeg"]
+        ] = None,
+        response_image_full_page: Optional[bool] = None,
+        selector: Optional[str] = None,
+        proxy_country: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Execute the Scrapeless Universal Scraping API to scrape a website."""
 
         try:
-            headless_to_use = headless if headless is not None else self.headless
-            js_render_to_use = js_render if js_render is not None else self.js_render
-            js_wait_until_to_use = (
-                js_wait_until if js_wait_until is not None else self.js_wait_until
-            )
-            outputs_to_use = outputs if outputs is not None else self.outputs
-            response_type_to_use = (
-                response_type if response_type is not None else self.response_type
-            )
-            response_image_full_page_to_use = (
-                response_image_full_page
-                if response_image_full_page is not None
-                else self.response_image_full_page
-            )
-            selector_to_use = selector if selector is not None else self.selector
-            proxy_country_to_use = (
-                proxy_country if proxy_country is not None else self.proxy_country
-            )
-
             results = self.scrapeless_universal_scraping_api_wrapper.get_page_content(
                 url=url,
-                headless=headless_to_use,
-                js_render=js_render_to_use,
-                js_wait_until=js_wait_until_to_use,
-                outputs=outputs_to_use,
-                response_type=response_type_to_use,
-                response_image_full_page=response_image_full_page_to_use,
-                selector=selector_to_use,
-                proxy_country=proxy_country_to_use,
+                headless=headless,
+                js_render=js_render,
+                js_wait_until=js_wait_until,
+                outputs=outputs,
+                response_type=response_type,
+                response_image_full_page=response_image_full_page,
+                selector=selector,
+                proxy_country=proxy_country,
             )
             return results
 

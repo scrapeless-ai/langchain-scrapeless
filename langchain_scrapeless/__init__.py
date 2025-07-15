@@ -1,7 +1,14 @@
 from importlib import metadata
 
-from langchain_scrapeless.tools.scrapeless_universal_scraping import ScrapelessUniversalScrapingTool
-from langchain_scrapeless.wrappers import ScrapelessAPIWrapper, ScrapelessUniversalScrapingAPIWrapper
+from langchain_scrapeless.tools.scrapeless_universal_scraping import (
+    ScrapelessUniversalScrapingTool,
+)
+from langchain_scrapeless.tools.scraping_api import ScrapelessDeepSerpGoogleSearchTool
+from langchain_scrapeless.tools.scraping_api import ScrapelessDeepSerpGoogleTrendsTool
+from langchain_scrapeless.wrappers import (
+    ScrapelessAPIWrapper,
+    ScrapelessUniversalScrapingAPIWrapper,
+)
 
 try:
     __version__ = metadata.version(__package__)
@@ -11,6 +18,8 @@ except metadata.PackageNotFoundError:
 del metadata  # optional, avoids polluting the results of dir(__package__)
 
 __all__ = [
+    "ScrapelessDeepSerpGoogleSearchTool",
+    "ScrapelessDeepSerpGoogleTrendsTool",
     "ScrapelessUniversalScrapingTool",
     "ScrapelessAPIWrapper",
     "ScrapelessUniversalScrapingAPIWrapper",
