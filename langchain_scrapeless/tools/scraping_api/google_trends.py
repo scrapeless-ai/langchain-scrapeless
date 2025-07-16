@@ -253,6 +253,25 @@ class ScrapelessDeepSerpGoogleTrendsTool(BaseTool):
     Example:
       .. code-block:: python
 
+        from langchain_openai import ChatOpenAI
+        from langchain_scrapeless import ScrapelessDeepSerpGoogleTrendsTool
+        from langgraph.prebuilt import create_react_agent
+
+        llm = ChatOpenAI()
+
+        tool = ScrapelessDeepSerpGoogleTrendsTool()
+
+        # Use the tool with an agent
+        tools = [tool]
+        agent = create_react_agent(llm, tools)
+
+        for chunk in agent.stream(
+                {"messages": [("human", "I want to know the trends of AI")]},
+                stream_mode="values"
+        ):
+            chunk["messages"][-1].pretty_print()
+        )
+
 
     """
 

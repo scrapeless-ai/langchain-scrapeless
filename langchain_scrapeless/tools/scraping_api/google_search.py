@@ -342,6 +342,23 @@ class ScrapelessDeepSerpGoogleSearchTool(BaseTool):
     Example:
       .. code-block:: python
 
+        from langchain_openai import ChatOpenAI
+        from langchain_scrapeless import ScrapelessDeepSerpGoogleSearchTool
+        from langgraph.prebuilt import create_react_agent
+
+        llm = ChatOpenAI()
+
+        tool = ScrapelessDeepSerpGoogleSearchTool()
+
+        # Use the tool with an agent
+        tools = [tool]
+        agent = create_react_agent(llm, tools)
+
+        for chunk in agent.stream(
+                {"messages": [("human", "I want to what is Scrapeless")]},
+                stream_mode="values"
+        ):
+            chunk["messages"][-1].pretty_print()
 
     """
 
@@ -352,7 +369,6 @@ class ScrapelessDeepSerpGoogleSearchTool(BaseTool):
 
     args_schema: Type[BaseModel] = ScrapelessGoogleSearchInput
     handle_tool_error: bool = True
-
 
     scrapeless_deepserp_api_wrapper: ScrapelessDeepSerpAPIWrapper = Field(
         default_factory=ScrapelessDeepSerpAPIWrapper
@@ -387,25 +403,25 @@ class ScrapelessDeepSerpGoogleSearchTool(BaseTool):
         super().__init__(**kwargs)
 
     def _run(
-            self,
-            q: str,
-            hl: Optional[str] = "en",
-            gl: Optional[str] = "us",
-            google_domain: Optional[str] = "google.com",
-            start: Optional[int] = 0,
-            num: Optional[int] = 10,
-            ludocid: Optional[str] = None,
-            kgmid: Optional[str] = None,
-            ibp: Optional[str] = None,
-            cr: Optional[str] = None,
-            lr: Optional[str] = None,
-            tbs: Optional[str] = None,
-            safe: Optional[Literal["active", "off"]] = None,
-            nfpr: Optional[Literal["1", "0"]] = None,
-            filter: Optional[Literal["1", "0"]] = None,
-            tbm: Optional[
-                Literal["isch", "lcl", "nws", "shop", "vid", "pts", "jobs"]
-            ] = None,
+        self,
+        q: str,
+        hl: Optional[str] = "en",
+        gl: Optional[str] = "us",
+        google_domain: Optional[str] = "google.com",
+        start: Optional[int] = 0,
+        num: Optional[int] = 10,
+        ludocid: Optional[str] = None,
+        kgmid: Optional[str] = None,
+        ibp: Optional[str] = None,
+        cr: Optional[str] = None,
+        lr: Optional[str] = None,
+        tbs: Optional[str] = None,
+        safe: Optional[Literal["active", "off"]] = None,
+        nfpr: Optional[Literal["1", "0"]] = None,
+        filter: Optional[Literal["1", "0"]] = None,
+        tbm: Optional[
+            Literal["isch", "lcl", "nws", "shop", "vid", "pts", "jobs"]
+        ] = None,
     ) -> Dict[str, Any]:
         """Execute the Scrapeless Universal Scraping API to scrape a website."""
 

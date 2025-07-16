@@ -1,9 +1,15 @@
-from typing import Dict, Any, Optional, Literal
+from typing import Dict, Any, List, Optional, Literal
 
 from langchain_core.utils import get_from_dict_or_env
 from pydantic import ConfigDict, model_validator, BaseModel
 from scrapeless import Scrapeless
-from scrapeless.types import UniversalScrapingRequest, ScrapingTaskRequest
+from scrapeless.types import (
+    CrawlStatusResponse,
+    ScrapeParams,
+    UniversalScrapingRequest,
+    ScrapingTaskRequest,
+    CrawlParams,
+)
 
 from langchain_scrapeless.utils import create_scrapeless_client
 
@@ -243,4 +249,113 @@ class ScrapelessDeepSerpAPIWrapper(ScrapelessAPIWrapper):
         )
 
         response = self.scrape_results(data)
+        return response
+
+
+class ScrapelessCrawlerScrapeAPIWrapper(ScrapelessAPIWrapper):
+    """Wrapper for Scrapeless Crawler Scrape API.
+
+    This wrapper can be used with the Scrapeless Crawler Scrape scenarios.
+    """
+
+    def scrape_results(
+        self,
+        urls: List[str],
+        formats: Optional[List[str]] = ["markdown"],
+        only_main_content: Optional[bool] = True,
+        include_tags: Optional[List[str]] = None,
+        exclude_tags: Optional[List[str]] = None,
+        headers: Optional[Dict[str, str]] = None,
+        wait_for: Optional[int] = 0,
+        timeout: Optional[int] = 30000,
+    ) -> Dict:
+        """Scrape the results from the URLs.
+
+        Args:
+            urls (List[str]): The URLs to scrape.
+            format (Optional[Literal["markdown", "rawHtml", "screenshot@fullPage", "json","links", "screenshot", "html"]]): The format of the output.
+            only_main_content (Optional[bool]): Whether to only return the main content of the page.
+            include_tags (Optional[List[str]]): The tags to include in the output.
+            exclude_tags (Optional[List[str]]): The tags to exclude in the output.
+            headers (Optional[Dict[str, str]]): The headers to send with the request.
+            wait_for (Optional[int]): The number of milliseconds to wait for the page to load.
+            timeout (Optional[int]): The timeout in milliseconds for the request.
+        """
+
+        data = ScrapeParams(
+            waitFor=wait_for,
+            timeout=timeout,
+            onlyMainContent=only_main_content,
+            includeTags=include_tags,
+            excludeTags=exclude_tags,
+            headers=headers,
+            formats=formats,
+            browserOptions={
+                "proxy_country": "ANY",
+                "session_name": "Crawl",
+                "session_recording": True,
+                "session_ttl": 900,
+            }
+        )
+
+        response = self.scrapeless_client.scraping_crawl.scrape.batch_scrape_urls(
+            urls, data
+        )
+        return response
+
+
+class ScrapelessCrawlerCrawlAPIWrapper(ScrapelessAPIWrapper):
+    """Wrapper for Scrapeless Crawler Crawl API.
+
+    This wrapper can be used with the Scrapeless Crawler Crawl scenarios.
+    """
+
+    def crawl_results(
+        self,
+        url: str,
+        limit: Optional[int] = 10000,
+        include_paths: Optional[List[str]] = None,
+        exclude_paths: Optional[List[str]] = None,
+        max_depth: Optional[int] = 10,
+        max_discovery_depth: Optional[int] = None,
+        ignore_sitemap: Optional[bool] = False,
+        ignore_query_params: Optional[bool] = False,
+        deduplicate_similar_urls: Optional[bool] = None,
+        regex_on_full_url: Optional[bool] = None,
+        allow_backward_links: Optional[bool] = False,
+        allow_external_links: Optional[bool] = False,
+        delay: Optional[int] = None,
+        formats: Optional[List[str]] = ["markdown"],
+        only_main_content: Optional[bool] = True,
+        include_tags: Optional[List[str]] = None,
+        exclude_tags: Optional[List[str]] = None,
+        headers: Optional[Dict[str, str]] = None,
+        wait_for: Optional[int] = 0,
+        timeout: Optional[int] = 30000,
+    ) -> CrawlStatusResponse:
+
+        params = CrawlParams(
+            limit=limit,
+            delay=delay,
+            maxDepth=max_depth,
+            maxDiscoveryDepth=max_discovery_depth,
+            ignoreSitemap=ignore_sitemap,
+            ignoreQueryParameters=ignore_query_params,
+            deduplicateSimilarURLs=deduplicate_similar_urls,
+            regexOnFullURL=regex_on_full_url,
+            allowBackwardLinks=allow_backward_links,
+            allowExternalLinks=allow_external_links,
+            includePaths=include_paths,
+            excludePaths=exclude_paths,
+            scrapeOptions=ScrapeParams(
+                waitFor=wait_for,
+                timeout=timeout,
+                onlyMainContent=only_main_content,
+                includeTags=include_tags,
+                excludeTags=exclude_tags,
+                headers=headers,
+                formats=formats,
+            ),
+        )
+        response = self.scrapeless_client.scraping_crawl.crawl.crawl_url(url, params)
         return response

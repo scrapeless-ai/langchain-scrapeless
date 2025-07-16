@@ -3,11 +3,20 @@ from importlib import metadata
 from langchain_scrapeless.tools.scrapeless_universal_scraping import (
     ScrapelessUniversalScrapingTool,
 )
-from langchain_scrapeless.tools.scraping_api import ScrapelessDeepSerpGoogleSearchTool
-from langchain_scrapeless.tools.scraping_api import ScrapelessDeepSerpGoogleTrendsTool
+from langchain_scrapeless.tools.clawer import (
+    ScrapelessCrawlerScrapeTool,
+    ScrapelessCrawlerCrawlTool,
+)
+from langchain_scrapeless.tools.scraping_api import (
+    ScrapelessDeepSerpGoogleSearchTool,
+    ScrapelessDeepSerpGoogleTrendsTool,
+)
 from langchain_scrapeless.wrappers import (
     ScrapelessAPIWrapper,
     ScrapelessUniversalScrapingAPIWrapper,
+    ScrapelessCrawlerScrapeAPIWrapper,
+    ScrapelessCrawlerCrawlAPIWrapper,
+    ScrapelessDeepSerpAPIWrapper,
 )
 
 try:
@@ -23,5 +32,10 @@ __all__ = [
     "ScrapelessUniversalScrapingTool",
     "ScrapelessAPIWrapper",
     "ScrapelessUniversalScrapingAPIWrapper",
+    "ScrapelessCrawlerScrapeAPIWrapper",
+    "ScrapelessCrawlerCrawlAPIWrapper",
+    "ScrapelessDeepSerpAPIWrapper",
+    "ScrapelessCrawlerScrapeTool",
+    "ScrapelessCrawlerCrawlTool",
     "__version__",
 ]

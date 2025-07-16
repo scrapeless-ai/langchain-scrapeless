@@ -3269,14 +3269,14 @@ files = [
 
 [[package]]
 name = "scrapeless"
-version = "1.0.4"
+version = "1.1.1"
 description = "scrapeless python sdk"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "scrapeless-1.0.4-py3-none-any.whl", hash = "sha256:c46ec28c670ae675c52457849ea2aeaa730c4fefe8c3d0e1f6609f21ce144b06"},
-    {file = "scrapeless-1.0.4.tar.gz", hash = "sha256:92a5b7ab618f493490489af63d90b2f923fc4d4a006a7ae8d4c823b9f1a7857f"},
+    {file = "scrapeless-1.1.1-py3-none-any.whl", hash = "sha256:39d87818c6c88a713960ca5125f893e609cd65d706fa95155e0392c0cdb1438c"},
+    {file = "scrapeless-1.1.1.tar.gz", hash = "sha256:70d8bef5741839e2e5c4bc934334ba6d059dd5d423daeac753e000c6d7c18de8"},
 ]
 
 [package.dependencies]
@@ -4097,4 +4097,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "8c89be7b754bf971f025dd300ec0578ba3007a53d649b71047016c30b5ce2ab6"
+content-hash = "0870a62f15a3023c0ae007fbe65c7ad2492badbc6f55502016f9580fd487aedf"
