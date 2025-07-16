@@ -1,13 +1,12 @@
-from typing import Type
+from langchain_tests.unit_tests import ToolsUnitTests
 
 from langchain_scrapeless.tools import (
-    ScrapelessUniversalScrapingTool,
+    ScrapelessCrawlerCrawlTool,
+    ScrapelessCrawlerScrapeTool,
     ScrapelessDeepSerpGoogleSearchTool,
     ScrapelessDeepSerpGoogleTrendsTool,
-    ScrapelessCrawlerScrapeTool,
-    ScrapelessCrawlerCrawlTool,
+    ScrapelessUniversalScrapingTool,
 )
-from langchain_tests.unit_tests import ToolsUnitTests
 
 
 def create_tool_test_class(name, tool_cls, example_args):

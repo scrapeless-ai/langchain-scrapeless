@@ -1,15 +1,16 @@
-from enum import Enum
 import os
-from typing import Type, Optional, Literal, Any, Dict
+from enum import Enum
+from typing import Any, Dict, Literal, Optional, Type
+
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import BaseModel, Field
+from scrapeless.client import Scrapeless as ScrapelessClient
 
 from langchain_scrapeless.error_messages import ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
 from langchain_scrapeless.utils import create_scrapeless_client
 from langchain_scrapeless.wrappers import (
     ScrapelessDeepSerpAPIWrapper,
 )
-from scrapeless.client import Scrapeless as ScrapelessClient
 
 
 class CategoryEnum(str, Enum):
@@ -125,7 +126,16 @@ class ScrapelessGoogleTrendsInput(BaseModel):
     """Input for Scrapeless DeepSerp Google Trends tool."""
 
     q: str = Field(
-        description="Parameter defines the query or queries you want to search. You can use anything that you would use in a regular Google Trends search. The maximum number of queries per search is 5 (this only applies to interest_over_time and compared_breakdown_by_region data_type, other types of data will only accept 1 query per search)."
+        description="""
+        Parameter defines the query or queries you want to search.
+
+        You can use anything that you would use in a regular Google Trends search.
+        
+        - The maximum number of queries per search is **5**.
+          (This only applies to `interest_over_time` and `compared_breakdown_by_region` 
+            data types.)
+        - Other types of data will only accept **1 query** per search.
+        """
     )
     data_type: Optional[
         Literal[
@@ -139,22 +149,33 @@ class ScrapelessGoogleTrendsInput(BaseModel):
     ] = Field(
         default="interest_over_time",
         description="""
-        The supported types are: autocomplete, interest_over_time, compared_breakdown_by_region, 
-        interest_by_subregion, related_queries, related_topics.
+        The supported types are:
+            - autocomplete
+            - interest_over_time
+            - compared_breakdown_by_region
+            - interest_by_subregion
+            - related_queries
+            - related_topics
         """,
     )
 
     date: Optional[str] = Field(
         default="today 1-m",
         description="""
-        The supported dates are: now 1-H, now 4-H, now 1-d, now 7-d, today 1-m, today 3-m, 
-        today 12-m, today 5-y, all.
-
+        The supported dates are:
+            now 1-H, now 4-H, now 1-d, now 7-d,
+            today 1-m, today 3-m, today 12-m, today 5-y, all.
+        
         You can also pass custom values:
-
-        Dates from 2004 to present: yyyy-mm-dd yyyy-mm-dd (e.g. 2021-10-15 2022-05-25)
-        Dates with hours within a week range: yyyy-mm-ddThh yyyy-mm-ddThh 
-        (e.g. 2022-05-19T10 2022-05-24T22). Hours will be calculated depending on the tz (time zone) parameter.
+        
+        - Dates from 2004 to present:
+            yyyy-mm-dd yyyy-mm-dd
+            e.g. 2021-10-15 2022-05-25
+        
+        - Dates with hours within a week range:
+            yyyy-mm-ddThh yyyy-mm-ddThh
+            e.g. 2022-05-19T10 2022-05-24T22
+            (Hours will be calculated depending on the tz (time zone) parameter.)
         """,
     )
 
@@ -162,7 +183,8 @@ class ScrapelessGoogleTrendsInput(BaseModel):
         default="en",
         description="""
         Parameter defines the language to use for the Google Trends search. 
-        It's a two-letter language code. (e.g., en for English, es for Spanish, or fr for French).
+        It's a two-letter language code. 
+            (e.g., en for English, es for Spanish, or fr for French).
         """,
     )
 
@@ -228,7 +250,8 @@ class ScrapelessGoogleTrendsInput(BaseModel):
         default=None,
         description="""
         Parameter defines the location from where you want the search to originate. 
-        It defaults to Worldwide (activated when the value of geo parameter is not set or empty).
+        It defaults to Worldwide 
+            (activated when the value of geo parameter is not set or empty).
         """,
     )
 
@@ -278,9 +301,15 @@ class ScrapelessDeepSerpGoogleTrendsTool(BaseTool):
     name: str = "scrapeless_deepserp_google_trends"
     description: str = """
         Get trending search data from Google Trends.
-        Restrictions: Activated for queries about trends, popularity, or interest over time.
-        Valid: Find the search interest for "AI" over the last year.
-        Invalid: A general question like "What is AI?" (use google_search).
+
+        Restrictions:
+            Activated for queries about trends, popularity, or interest over time.
+        
+        Valid:
+            Find the search interest for "AI" over the last year.
+        
+        Invalid:
+            A general question like "What is AI?" (use google_search).
     """
 
     args_schema: Type[BaseModel] = ScrapelessGoogleTrendsInput

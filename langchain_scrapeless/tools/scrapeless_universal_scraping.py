@@ -1,12 +1,13 @@
 import os
-from typing import Type, Optional, Literal, Any, Dict
+from typing import Any, Dict, Literal, Optional, Type
+
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import BaseModel, Field
+from scrapeless.client import Scrapeless as ScrapelessClient
 
 from langchain_scrapeless.error_messages import ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
 from langchain_scrapeless.utils import create_scrapeless_client
 from langchain_scrapeless.wrappers import ScrapelessUniversalScrapingAPIWrapper
-from scrapeless.client import Scrapeless as ScrapelessClient
 
 
 class ScrapelessUniversalScrapingInput(BaseModel):
@@ -109,7 +110,8 @@ class ScrapelessUniversalScrapingInput(BaseModel):
         description="""
         Two-letter country code for geo-specific access.
         
-        Set this when you need to view the website as if accessing from a specific country.
+        Set this when you need to view the website as if accessing 
+        from a specific country.
         Example values: "us", "gb", "de", "jp", etc.
         
         Leave as None to use default country routing.
@@ -141,8 +143,13 @@ class ScrapelessUniversalScrapingTool(BaseTool):
         tools = [tool]
         agent = create_react_agent(llm, tools)
 
+        prompt_text = (
+            "Use the scrapeless scraping tool to fetch https://www.scrapeless.com/en\n"
+            "and extract the h1 tag."
+        )
+
         for chunk in agent.stream(
-                {"messages": [("human", "Use the scrapeless scraping tool to fetch https://www.scrapeless.com/en and extract the h1 tag.")]},
+                {"messages": [("human", prompt_text)]},
                 stream_mode="values"
         ):
             chunk["messages"][-1].pretty_print()
@@ -151,14 +158,20 @@ class ScrapelessUniversalScrapingTool(BaseTool):
     """
 
     name: str = "scrapeless_universal_scraping"
-    description: str = (
-        "Extract structured data from websites using the Scrapeless Universal Scraping API."
-        "Universal Scraping API helps you bypass website blocks in real-time using advanced technology."
-        "It includes features like recognizing browser fingerprints, solving CAPTCHAs, rotating IPs,"
-        " and intelligently retrying requests. This ensures you can access any public website without interruptions."
-        "It supports various scraping methods, excels in rendering JavaScript, and implements anti-scraping techniques,"
-        "giving you the tools to navigate the web effectively."
-    )
+    description: str = """
+    Extract structured data from websites using the Scrapeless Universal Scraping API.
+    
+    Universal Scraping API helps you bypass website blocks 
+    in real-time using advanced technology.
+    
+    It includes features like recognizing browser fingerprints, solving CAPTCHAs, 
+    rotating IPs, and intelligently retrying requests. 
+    This ensures you can access any public website without interruptions.
+    
+    It supports various scraping methods, excels in rendering JavaScript, 
+    and implements anti-scraping techniques, 
+    giving you the tools to navigate the web effectively.
+    """
 
     args_schema: Type[BaseModel] = ScrapelessUniversalScrapingInput
     handle_tool_error: bool = True

@@ -1,15 +1,16 @@
 import os
-from typing import Type, Optional, Literal, Any, Dict, List
+from typing import Any, Dict, List, Literal, Optional, Type
+
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import BaseModel, Field
+from scrapeless.client import Scrapeless as ScrapelessClient
+from scrapeless.types import CrawlStatusResponse
 
 from langchain_scrapeless.error_messages import ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
 from langchain_scrapeless.utils import create_scrapeless_client
 from langchain_scrapeless.wrappers import (
     ScrapelessCrawlerCrawlAPIWrapper,
 )
-from scrapeless.client import Scrapeless as ScrapelessClient
-from scrapeless.types import CrawlStatusResponse
 
 
 class ScrapelessCrawlerCrawlInput(BaseModel):
@@ -20,26 +21,50 @@ class ScrapelessCrawlerCrawlInput(BaseModel):
         description="Maximum number of pages to crawl.", default=10000
     )
     include_paths: Optional[List[str]] = Field(
-        description="URL pathname regex patterns that include matching URLs in the crawl. Only the paths that match the specified patterns will be included in the response. For example, if you set 'includePaths': ['blog/.*'] for the base URL firecrawl.dev, only results matching that pattern will be included, such as https://www.scrapeless.com/blog/firecrawl-launch-week-1-recap.",
+        description="""
+        URL pathname regex patterns that include matching URLs in the crawl. 
+        Only the paths that match the specified patterns 
+            will be included in the response. 
+        For example, if you set 'includePaths': ['blog/.*'] 
+            for the base URL firecrawl.dev, 
+        only results matching that pattern will be included, 
+        such as https://www.scrapeless.com/blog/firecrawl-launch-week-1-recap.
+        """,
         default=None,
     )
     exclude_paths: Optional[List[str]] = Field(
-        description="URL pathname regex patterns that exclude matching URLs from the crawl. For example, if you set 'excludePaths': ['blog/.*'] for the base URL firecrawl.dev, any results matching that pattern will be excluded, such as https://www.scrapeless.com/blog/firecrawl-launch-week-1-recap.",
+        description="""
+        URL pathname regex patterns that exclude matching URLs from the crawl. 
+        For example, if you set 'excludePaths': ['blog/.*'] 
+            for the base URL firecrawl.dev, 
+        any results matching that pattern will be excluded, 
+        such as https://www.scrapeless.com/blog/firecrawl-launch-week-1-recap.
+        """,
         default=None,
     )
     max_depth: Optional[int] = Field(
-        description="Maximum depth to crawl relative to the base URL. Basically, the max number of slashes the pathname of a scraped URL may contain.",
+        description="""
+        Maximum depth to crawl relative to the base URL. 
+        Basically, the max number of slashes the pathname of a scraped URL may contain.
+        """,
         default=10,
     )
     max_discovery_depth: Optional[int] = Field(
-        description="Maximum depth to crawl based on discovery order. The root site and sitemapped pages has a discovery depth of 0. For example, if you set it to 1, and you set ignoreSitemap, you will only crawl the entered URL and all URLs that are linked on that page.",
+        description="""
+        Maximum depth to crawl based on discovery order.
+        The root site and sitemapped pages has a discovery depth of 0. 
+        For example, if you set it to 1, and you set ignoreSitemap, 
+        you will only crawl the entered URL and all URLs that are linked on that page.
+        """,
         default=None,
     )
     ignore_sitemap: Optional[bool] = Field(
         description="Ignore the website sitemap when crawling", default=False
     )
     ignore_query_params: Optional[bool] = Field(
-        description="Do not re-scrape the same path with different (or none) query parameters",
+        description="""
+        Do not re-scrape the same path with different (or none) query parameters
+        """,
         default=False,
     )
     deduplicate_similar_urls: Optional[bool] = Field(
@@ -47,11 +72,19 @@ class ScrapelessCrawlerCrawlInput(BaseModel):
         default=None,
     )
     regex_on_full_url: Optional[bool] = Field(
-        description="Controls whether the regular expression should be applied to the full URL.",
+        description="""
+        Controls whether the regular expression should be applied to the full URL.
+        """,
         default=None,
     )
     allow_backward_links: Optional[bool] = Field(
-        description="By default, the crawl skips sublinks that aren’t part of the URL hierarchy you specify. For example, crawling https://example.com/products/ wouldn’t capture pages under https://example.com/promotions/deal-567. To include such links, enable the allowBackwardLinks parameter.",
+        description="""
+        By default, the crawl skips sublinks that aren’t 
+            part of the URL hierarchy you specify. 
+        For example, crawling https://example.com/products/ 
+            wouldn’t capture pages under https://example.com/promotions/deal-567. 
+        To include such links, enable the allowBackwardLinks parameter.
+        """,
         default=False,
     )
     allow_external_links: Optional[bool] = Field(
@@ -59,7 +92,10 @@ class ScrapelessCrawlerCrawlInput(BaseModel):
         default=False,
     )
     delay: Optional[int] = Field(
-        description="Delay in seconds between scrapes. This helps respect website rate limits.",
+        description="""
+        Delay in seconds between scrapes. 
+        This helps respect website rate limits.
+        """,
         default=None,
     )
 
@@ -78,7 +114,10 @@ class ScrapelessCrawlerCrawlInput(BaseModel):
         ]
     ] = Field(description="The format of the output.", default=["markdown"])
     only_main_content: Optional[bool] = Field(
-        description="Only return the main content of the page excluding headers, navs, footers, etc.",
+        description="""
+        Only return the main content of the page 
+        excluding headers, navs, footers, etc.
+        """,
         default=True,
     )
     include_tags: Optional[List[str]] = Field(
@@ -89,11 +128,17 @@ class ScrapelessCrawlerCrawlInput(BaseModel):
         default=None,
     )
     headers: Optional[Dict[str, str]] = Field(
-        description="The headers to send with the request. Can be used to send cookies, user-agent, etc.",
+        description="""
+        The headers to send with the request. 
+        Can be used to send cookies, user-agent, etc.
+        """,
         default=None,
     )
     wait_for: Optional[int] = Field(
-        description="Specify a delay in milliseconds before fetching the content, allowing the page sufficient time to load.",
+        description="""
+        Specify a delay in milliseconds before fetching the content, 
+        allowing the page sufficient time to load.
+        """,
         default=0,
     )
     timeout: Optional[int] = Field(
@@ -125,8 +170,13 @@ class ScrapelessCrawlerCrawlTool(BaseTool):
         tools = [tool]
         agent = create_react_agent(llm, tools)
 
+        prompt_text = (
+            "Use the scrapeless crawler crawl tool to crawl the website https://example.com\n"
+            "and output the markdown content as a string."
+        )
+
         for chunk in agent.stream(
-                {"messages": [("human", "Use the scrapeless crawler crawl tool to crawl the website https://example.com and output the markdown content as a string.")]},
+                {"messages": [("human", prompt_text)]},
                 stream_mode="values"
         ):
             chunk["messages"][-1].pretty_print()
@@ -136,7 +186,8 @@ class ScrapelessCrawlerCrawlTool(BaseTool):
     name: str = "scrapeless_crawler_crawl"
     description: str = """
      The tool can be used to crawl a website.
-     It allows you to get the data you want from web pages with a single call. You can scrape page content and capture its data in various formats.
+     It allows you to get the data you want from web pages with a single call. 
+     You can scrape page content and capture its data in various formats.
      It can be used to crawl the content of a single website or a list of websites.
     """
 

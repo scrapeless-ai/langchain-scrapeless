@@ -1,29 +1,57 @@
 import os
-from typing import Type, Optional, Literal, Any, Dict
+from typing import Any, Dict, Literal, Optional, Type
+
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import BaseModel, Field
+from scrapeless.client import Scrapeless as ScrapelessClient
 
 from langchain_scrapeless.error_messages import ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
 from langchain_scrapeless.utils import create_scrapeless_client
 from langchain_scrapeless.wrappers import (
     ScrapelessDeepSerpAPIWrapper,
 )
-from scrapeless.client import Scrapeless as ScrapelessClient
 
 
 class ScrapelessGoogleSearchInput(BaseModel):
     """Input for Scrapeless DeepSerp Google Search tool."""
 
     q: str = Field(
-        description="Parameter defines the query you want to search. You can use anything that you would use in a regular Google search. e.g. inurl:, site:, intitle:. We also support advanced search query parameters such as as_dt and as_eq."
+        description="""
+        Parameter defines the query you want to search.
+        
+        You can use anything that you would use in a regular Google search, e.g.:
+        - inurl:
+        - site:
+        - intitle:
+        
+        We also support advanced search query parameters such as `as_dt` and `as_eq`.
+        """
     )
     hl: Optional[str] = Field(
         default="en",
-        description="Parameter defines the language to use for the Google search. It's a two-letter language code. (e.g., en for English, es for Spanish, or fr for French).",
+        description="""
+        Parameter defines the language to use for the Google search.
+        
+        It's a two-letter language code.
+        
+        Examples:
+        - en for English
+        - es for Spanish
+        - fr for French
+        """,
     )
     gl: Optional[str] = Field(
         default="us",
-        description="Parameter defines the country to use for the Google search. It's a two-letter country code. (e.g., us for the United States, uk for United Kingdom, or fr for France).",
+        description="""
+        Parameter defines the country to use for the Google search.
+        
+        It's a two-letter country code.
+        
+        Examples:
+        - us for the United States
+        - uk for the United Kingdom
+        - fr for France
+        """,
     )
     google_domain: Optional[
         Literal[
@@ -215,7 +243,9 @@ class ScrapelessGoogleSearchInput(BaseModel):
         ]
     ] = Field(
         default="google.com",
-        description="Parameter defines the Google domain to use. It defaults to google.com.",
+        description="""
+        Parameter defines the Google domain to use. It defaults to google.com.
+        """,
     )
     start: Optional[int] = Field(
         default=0,
@@ -228,15 +258,20 @@ class ScrapelessGoogleSearchInput(BaseModel):
     num: Optional[int] = Field(
         default=10,
         description="""
-        Parameter defines the maximum number of results to return. 
-        (e.g., 10 (default) returns 10 results, 40 returns 40 results, and 100 returns 100 results).
+           Parameter defines the maximum number of results to return.
+
+            For example:
+            - 10 (default) returns 10 results,
+            - 40 returns 40 results,
+            - 100 returns 100 results.
         """,
     )
 
     ludocid: Optional[str] = Field(
         default=None,
         description="""
-        Parameter defines the id (CID) of the Google My Business listing you want to scrape. 
+        Parameter defines the id (CID) of the Google My Business listing 
+            you want to scrape. 
         Also known as Google Place ID.
         """,
     )
@@ -244,10 +279,16 @@ class ScrapelessGoogleSearchInput(BaseModel):
     kgmid: Optional[str] = Field(
         default=None,
         description="""
-        Parameter defines the id (KGMID) of the Google Knowledge Graph listing you want to scrape. 
-        Also known as Google Knowledge Graph ID. Searches with kgmid parameter will return results 
-        for the originally encrypted search parameters. For some searches, kgmid may override 
-        all other parameters except start, and num parameters.
+        Parameter defines the id (KGMID) of the Google Knowledge Graph 
+            listing you want to scrape.
+
+        Also known as Google Knowledge Graph ID.
+        
+        Searches with the `kgmid` parameter will return results 
+            for the originally encrypted search parameters.
+        
+        For some searches, `kgmid` may override all 
+            other parameters except `start` and `num`.
         """,
     )
 
@@ -262,26 +303,43 @@ class ScrapelessGoogleSearchInput(BaseModel):
     cr: Optional[str] = Field(
         default=None,
         description="""
-        Parameter defines one or multiple countries to limit the search to. 
-        It uses country{two-letter upper-case country code} to specify countries and | as a delimiter. 
-        (e.g., countryFR|countryDE will only search French and German pages).
+       Parameter defines one or multiple countries to limit the search to.
+
+        It uses `country{two-letter upper-case country code}` to specify countries, 
+            with `|` as a delimiter.
+        
+        For example:
+        - `countryFR|countryDE` will only search French and German pages.
         """,
     )
 
     lr: Optional[str] = Field(
         default=None,
         description="""
-        Parameter defines one or multiple languages to limit the search to. 
-        It uses lang_{two-letter language code} to specify languages and | as a delimiter. 
-        (e.g., lang_fr|lang_de will only search French and German pages).
+        Parameter defines one or multiple languages to limit the search to.
+
+        It uses `lang_{two-letter language code}` to specify languages, 
+            with `|` as a delimiter.
+        
+        For example:
+        - `lang_fr|lang_de` will only search French and German pages.
         """,
     )
 
     tbs: Optional[str] = Field(
         default=None,
         description="""
-        (to be searched) parameter defines advanced search parameters that aren't possible 
-        in the regular query field. (e.g., advanced search for patents, dates, news, videos, images, apps, or text contents).
+        (to be searched) parameter defines advanced search parameters 
+            that aren't possible in the regular query field.
+        
+        Examples include advanced search for:
+        - patents
+        - dates
+        - news
+        - videos
+        - images
+        - apps
+        - text contents
         """,
     )
 
@@ -297,17 +355,25 @@ class ScrapelessGoogleSearchInput(BaseModel):
         default=None,
         description="""
         Parameter defines the exclusion of results from an auto-corrected query 
-        when the original query is spelled wrong. It can be set to 1 to exclude these results, 
-        or 0 to include them (default). Note that this parameter may not prevent Google 
-        from returning results for an auto-corrected query if no other results are available.
+        when the original query is spelled wrong.
+        
+        - Set to 1 to exclude these results.
+        - Set to 0 (default) to include them.
+        
+        Note:
+        This parameter may not prevent Google from returning results for 
+        an auto-corrected query if no other results are available.
         """,
     )
 
     filter: Optional[Literal["1", "0"]] = Field(
         default=None,
         description="""
-        Parameter defines if the filters for 'Similar Results' and 'Omitted Results' are on or off. 
-        It can be set to 1 (default) to enable these filters, or 0 to disable these filters.
+        Parameter defines if the filters for 'Similar Results' and 'Omitted Results' 
+            are on or off.
+
+        - Set to 1 (default) to enable these filters.
+        - Set to 0 to disable these filters.
         """,
     )
 
@@ -363,9 +429,13 @@ class ScrapelessDeepSerpGoogleSearchTool(BaseTool):
     """
 
     name: str = "scrapeless_deepserp_google_search"
-    description: str = (
-        "Universal Information Search Engine.Retrieves any data information; Explanatory queries (why, how).Comparative analysis requests"
-    )
+    description: str = """
+        Universal Information Search Engine.
+    
+        - Retrieves any data information.
+        - Handles explanatory queries (e.g., "why", "how").
+        - Supports comparative analysis requests.
+    """
 
     args_schema: Type[BaseModel] = ScrapelessGoogleSearchInput
     handle_tool_error: bool = True

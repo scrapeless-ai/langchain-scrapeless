@@ -2,7 +2,7 @@ from typing import TypeVar
 
 from scrapeless import Scrapeless
 
-T = TypeVar('T', Scrapeless, Scrapeless)
+T = TypeVar("T", Scrapeless, Scrapeless)
 
 
 def create_scrapeless_client(client_cls: type[T], token: str) -> T:
@@ -17,11 +17,13 @@ def create_scrapeless_client(client_cls: type[T], token: str) -> T:
         ValueError: If the API token is not provided.
     """
     if not token:
-        msg = 'API token is required to create a Scrapeless client.'
+        msg = "API token is required to create a Scrapeless client."
         raise ValueError(msg)
 
-    client = client_cls({
-        'api_key': token,
-    })
+    client = client_cls(
+        {
+            "api_key": token,
+        }
+    )
 
     return client

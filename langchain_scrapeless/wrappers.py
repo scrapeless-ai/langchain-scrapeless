@@ -1,14 +1,14 @@
-from typing import Dict, Any, List, Optional, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 from langchain_core.utils import get_from_dict_or_env
-from pydantic import ConfigDict, model_validator, BaseModel
+from pydantic import BaseModel, ConfigDict, model_validator
 from scrapeless import Scrapeless
 from scrapeless.types import (
+    CrawlParams,
     CrawlStatusResponse,
     ScrapeParams,
-    UniversalScrapingRequest,
     ScrapingTaskRequest,
-    CrawlParams,
+    UniversalScrapingRequest,
 )
 
 from langchain_scrapeless.utils import create_scrapeless_client
@@ -95,10 +95,18 @@ class ScrapelessUniversalScrapingAPIWrapper(ScrapelessAPIWrapper):
             url (str): The URL of the page to scrape.
             headless (bool): Whether to use a headless browser.
             js_render (bool): Whether to use JavaScript rendering.
-            js_wait_until (Optional[Literal["load", "domcontentloaded", "networkidle0", "networkidle2"]]): The wait until condition for JavaScript rendering.
-            outputs (Optional[Literal["phone_numbers", "headings", "images", "audios", "videos", "links", "menus", "hashtags", "emails", "metadata", "tables", "favicon"]]): The outputs to return.
-            response_type (Optional[Literal["html", "plaintext", "markdown", "png", "jpeg"]]): The response type.
-            response_image_full_page (Optional[bool]): Whether to return the full page image.
+            js_wait_until (Optional[Literal[
+                "load", "domcontentloaded", "networkidle0", "networkidle2"
+            ]]): The wait until condition for JavaScript rendering.
+            outputs (Optional[Literal[
+                "phone_numbers", "headings", "images", "audios", "videos", "links",
+                "menus", "hashtags", "emails", "metadata", "tables", "favicon"
+            ]]): The outputs to return.
+            response_type (Optional[Literal[
+                "html", "plaintext", "markdown", "png", "jpeg"
+            ]]): The response type.
+            response_image_full_page (Optional[bool]):
+                Whether to return the full page image.
             selector (Optional[str]): The selector to use for the page.
             proxy_country (Optional[str]): The proxy country to use for the request.
         """
@@ -161,22 +169,30 @@ class ScrapelessDeepSerpAPIWrapper(ScrapelessAPIWrapper):
         """Get the content of a page.
 
         Args:
-            q (str): The query to search for.
-            hl (Optional[str]): The language to use for the search.
-            gl (Optional[str]): The country to use for the search.
-            google_domain (Optional[str]): The domain to use for the search.
-            start (Optional[int]): The start index for the search.
-            num (Optional[int]): The number of results to return.
-            ludocid (Optional[str]): The ludocid to use for the search.
-            kgmid (Optional[str]): The kgmid to use for the search.
-            ibp (Optional[str]): The ibp to use for the search.
-            cr (Optional[str]): The cr to use for the search.
-            lr (Optional[str]): The lr to use for the search.
-            tbs (Optional[str]): The tbs to use for the search.
-            safe (Optional[Literal["active", "off"]]): The safe to use for the search.
-            nfpr (Optional[Literal["1", "0"]]): The nfpr to use for the search.
-            filter (Optional[Literal["1", "0"]]): The filter to use for the search.
-            tbm (Optional[Literal["isch", "lcl", "nws", "shop", "vid", "pts", "jobs"]]): The tbm to use for the search.
+             q (str): The query to search for.
+             hl (Optional[str]): The language to use for the search.
+             gl (Optional[str]): The country to use for the search.
+             google_domain (Optional[str]): The domain to use for the search.
+             start (Optional[int]): The start index for the search.
+             num (Optional[int]): The number of results to return.
+             ludocid (Optional[str]): The ludocid to use for the search.
+             kgmid (Optional[str]): The kgmid to use for the search.
+             ibp (Optional[str]): The ibp to use for the search.
+             cr (Optional[str]): The cr to use for the search.
+             lr (Optional[str]): The lr to use for the search.
+             tbs (Optional[str]): The tbs to use for the search.
+             safe (Optional[Literal[
+                 "active", "off"
+             ]]): The safe to use for the search.
+             nfpr (Optional[Literal[
+                 "1", "0"
+             ]]): The nfpr to use for the search.
+             filter (Optional[Literal[
+                 "1", "0"
+             ]]): The filter to use for the search.
+             tbm (Optional[Literal[
+                 "isch", "lcl", "nws", "shop", "vid", "pts", "jobs"
+             ]]): The tbm to use for the search.
         """
 
         data = ScrapingTaskRequest(
@@ -227,12 +243,16 @@ class ScrapelessDeepSerpAPIWrapper(ScrapelessAPIWrapper):
 
         Args:
             q (str): The query to search for.
-            data_type (Optional[Literal["autocomplete", "interest_over_time", "compared_breakdown_by_region", "interest_by_subregion", "related_queries", "related_topics"]]): The data type to use for the search.
+            data_type (Optional[Literal[
+                "autocomplete", "interest_over_time",
+                "compared_breakdown_by_region", "interest_by_subregion",
+                "related_queries", "related_topics"
+            ]]): The data type to use for the search.
             date (Optional[str]): The date to use for the search.
             hl (Optional[str]): The language to use for the search.
             tz (Optional[str]): The time zone to use for the search.
             geo (Optional[str]): The geo to use for the search.
-            cat (Optional[str]): The cat to use for the search.
+            cat (Optional[str]): The category to use for the search.
         """
 
         data = ScrapingTaskRequest(
@@ -272,14 +292,23 @@ class ScrapelessCrawlerScrapeAPIWrapper(ScrapelessAPIWrapper):
         """Scrape the results from the URLs.
 
         Args:
-            urls (List[str]): The URLs to scrape.
-            format (Optional[Literal["markdown", "rawHtml", "screenshot@fullPage", "json","links", "screenshot", "html"]]): The format of the output.
-            only_main_content (Optional[bool]): Whether to only return the main content of the page.
-            include_tags (Optional[List[str]]): The tags to include in the output.
-            exclude_tags (Optional[List[str]]): The tags to exclude in the output.
-            headers (Optional[Dict[str, str]]): The headers to send with the request.
-            wait_for (Optional[int]): The number of milliseconds to wait for the page to load.
-            timeout (Optional[int]): The timeout in milliseconds for the request.
+             urls (List[str]): The URLs to scrape.
+             format (Optional[Literal[
+                 "markdown", "rawHtml", "screenshot@fullPage",
+                 "json", "links", "screenshot", "html"
+             ]]): The format of the output.
+             only_main_content (Optional[bool]):
+                 Whether to only return the main content of the page.
+             include_tags (Optional[List[str]]):
+                 The tags to include in the output.
+             exclude_tags (Optional[List[str]]):
+                 The tags to exclude in the output.
+             headers (Optional[Dict[str, str]]):
+                 The headers to send with the request.
+             wait_for (Optional[int]):
+                 The number of milliseconds to wait for the page to load.
+             timeout (Optional[int]):
+                 The timeout in milliseconds for the request.
         """
 
         data = ScrapeParams(
@@ -295,7 +324,7 @@ class ScrapelessCrawlerScrapeAPIWrapper(ScrapelessAPIWrapper):
                 "session_name": "Crawl",
                 "session_recording": True,
                 "session_ttl": 900,
-            }
+            },
         )
 
         response = self.scrapeless_client.scraping_crawl.scrape.batch_scrape_urls(
@@ -333,7 +362,6 @@ class ScrapelessCrawlerCrawlAPIWrapper(ScrapelessAPIWrapper):
         wait_for: Optional[int] = 0,
         timeout: Optional[int] = 30000,
     ) -> CrawlStatusResponse:
-
         params = CrawlParams(
             limit=limit,
             delay=delay,

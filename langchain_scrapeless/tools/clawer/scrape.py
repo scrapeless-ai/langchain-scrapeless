@@ -1,14 +1,15 @@
 import os
-from typing import Type, Optional, Literal, Any, Dict, List
+from typing import Any, Dict, List, Literal, Optional, Type
+
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import BaseModel, Field
+from scrapeless.client import Scrapeless as ScrapelessClient
 
 from langchain_scrapeless.error_messages import ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
 from langchain_scrapeless.utils import create_scrapeless_client
 from langchain_scrapeless.wrappers import (
     ScrapelessCrawlerScrapeAPIWrapper,
 )
-from scrapeless.client import Scrapeless as ScrapelessClient
 
 
 class ScrapelessCrawlerScrapeInput(BaseModel):
@@ -29,7 +30,10 @@ class ScrapelessCrawlerScrapeInput(BaseModel):
         ]
     ] = Field(description="The format of the output.", default=["markdown"])
     only_main_content: Optional[bool] = Field(
-        description="Only return the main content of the page excluding headers, navs, footers, etc.",
+        description="""
+        Only return the main content of the page 
+        excluding headers, navs, footers, etc.
+        """,
         default=True,
     )
     include_tags: Optional[List[str]] = Field(
@@ -40,11 +44,17 @@ class ScrapelessCrawlerScrapeInput(BaseModel):
         default=None,
     )
     headers: Optional[Dict[str, str]] = Field(
-        description="The headers to send with the request. Can be used to send cookies, user-agent, etc.",
+        description="""
+        The headers to send with the request. 
+        Can be used to send cookies, user-agent, etc.
+        """,
         default=None,
     )
     wait_for: Optional[int] = Field(
-        description="Specify a delay in milliseconds before fetching the content, allowing the page sufficient time to load.",
+        description="""
+        Specify a delay in milliseconds before fetching the content, 
+        allowing the page sufficient time to load.
+        """,
         default=0,
     )
     timeout: Optional[int] = Field(
@@ -76,8 +86,13 @@ class ScrapelessCrawlerScrapeTool(BaseTool):
         tools = [tool]
         agent = create_react_agent(llm, tools)
 
+        prompt_text = (
+            "Use the scrapeless crawler scrape tool to get the website content of https://example.com\n"
+            "and output the html content as a string."
+        )
+
         for chunk in agent.stream(
-                {"messages": [("human", "Use the scrapeless crawler scrape tool to get the website content of https://example.com and output the html content as a string.")]},
+                {"messages": [("human", prompt_text)]},
                 stream_mode="values"
         ):
             chunk["messages"][-1].pretty_print()
@@ -89,7 +104,8 @@ class ScrapelessCrawlerScrapeTool(BaseTool):
     name: str = "scrapeless_crawler_scrape"
     description: str = """
      The tool can be used to scrape the content of a website.
-     It allows you to get the data you want from web pages with a single call. You can scrape page content and capture its data in various formats.
+     It allows you to get the data you want from web pages with a single call. 
+     You can scrape page content and capture its data in various formats.
      It can be used to scrape the content of a single website or a list of websites.
     """
 
