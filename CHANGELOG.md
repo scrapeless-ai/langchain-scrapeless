@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github-sunorains/scrapeless-ai/langchain-scrapeless/compare/v0.1.2...v0.1.3) (2025-07-17)
+
+
+### Bug Fixes
+
+* fix project authors format ([bc03c69](https://github-sunorains/scrapeless-ai/langchain-scrapeless/commit/bc03c694144f4ba40b82ad718d3c64cd73373f66))
+
 ### [0.1.2](https://github-sunorains/scrapeless-ai/langchain-scrapeless/compare/v0.1.1...v0.1.2) (2025-07-17)
 
 ### 0.1.1 (2025-07-17)
