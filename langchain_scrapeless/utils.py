@@ -2,10 +2,11 @@ from typing import TypeVar
 
 from scrapeless import Scrapeless
 
-T = TypeVar("T", Scrapeless, Scrapeless)
+ScrapelessT = TypeVar("ScrapelessT", bound=Scrapeless)
+AnyT = TypeVar("AnyT")
 
 
-def create_scrapeless_client(client_cls: type[T], token: str) -> T:
+def create_scrapeless_client(client_cls: type[ScrapelessT], token: str) -> ScrapelessT:
     """Create a Scrapeless client instance with the provided API token.
 
     Args:
@@ -27,3 +28,16 @@ def create_scrapeless_client(client_cls: type[T], token: str) -> T:
     )
 
     return client
+
+
+def format_default_value(value: AnyT | None, default_value: AnyT) -> AnyT:
+    """Format the default value of a Scrapeless client.
+
+    Args:
+        value (T | None): The value to format.
+        default_value (T): The default value to return if value is None.
+
+    Returns:
+        T: The original value or the default value if original is None.
+    """
+    return default_value if value is None else value

@@ -362,6 +362,13 @@ class ScrapelessCrawlerCrawlAPIWrapper(ScrapelessAPIWrapper):
         wait_for: Optional[int] = 0,
         timeout: Optional[int] = 30000,
     ) -> CrawlStatusResponse:
+        browser_options = {
+            "proxy_country": "ANY",
+            "session_name": "Crawl",
+            "session_recording": True,
+            "session_ttl": 900,
+        }
+
         params = CrawlParams(
             limit=limit,
             delay=delay,
@@ -383,7 +390,9 @@ class ScrapelessCrawlerCrawlAPIWrapper(ScrapelessAPIWrapper):
                 excludeTags=exclude_tags,
                 headers=headers,
                 formats=formats,
+                browserOptions=browser_options,
             ),
+            browserOptions=browser_options,
         )
         response = self.scrapeless_client.scraping_crawl.crawl.crawl_url(url, params)
         return response

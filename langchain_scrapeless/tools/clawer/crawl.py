@@ -7,7 +7,7 @@ from scrapeless.client import Scrapeless as ScrapelessClient
 from scrapeless.types import CrawlStatusResponse
 
 from langchain_scrapeless.error_messages import ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
-from langchain_scrapeless.utils import create_scrapeless_client
+from langchain_scrapeless.utils import create_scrapeless_client, format_default_value
 from langchain_scrapeless.wrappers import (
     ScrapelessCrawlerCrawlAPIWrapper,
 )
@@ -242,7 +242,7 @@ class ScrapelessCrawlerCrawlTool(BaseTool):
         allow_external_links: Optional[bool] = False,
         delay: Optional[int] = None,
         # Scrape options
-        formats: Optional[List[str]] = ["markdown"],
+        formats: Optional[List[str]] = None,
         only_main_content: Optional[bool] = True,
         include_tags: Optional[List[str]] = None,
         exclude_tags: Optional[List[str]] = None,
@@ -253,28 +253,56 @@ class ScrapelessCrawlerCrawlTool(BaseTool):
         """Execute the Scrapeless Crawler Scrape API to scrape a website."""
 
         try:
+            limit_to_use = format_default_value(limit, 10000)
+            include_paths_to_use = format_default_value(include_paths, [])
+            exclude_paths_to_use = format_default_value(exclude_paths, [])
+            max_depth_to_use = format_default_value(max_depth, 10)
+            max_discovery_depth_to_use = format_default_value(max_discovery_depth, 5)
+            ignore_sitemap_to_use = format_default_value(ignore_sitemap, False)
+            ignore_query_params_to_use = format_default_value(
+                ignore_query_params, False
+            )
+            deduplicate_similar_urls_to_use = format_default_value(
+                deduplicate_similar_urls, True
+            )
+            regex_on_full_url_to_use = format_default_value(regex_on_full_url, True)
+            allow_backward_links_to_use = format_default_value(
+                allow_backward_links, False
+            )
+            allow_external_links_to_use = format_default_value(
+                allow_external_links, False
+            )
+            delay_to_use = format_default_value(delay, 1)
+            formats_to_use = format_default_value(formats, ["markdown"])
+            only_main_content_to_use = format_default_value(only_main_content, True)
+            include_tags_to_use = format_default_value(include_tags, [])
+            exclude_tags_to_use = format_default_value(exclude_tags, [])
+            headers_to_use = format_default_value(headers, {})
+            wait_for_to_use = format_default_value(wait_for, 0)
+            timeout_to_use = format_default_value(timeout, 30000)
+
             results = self.scrapeless_crawler_api_wrapper.crawl_results(
                 url=url,
-                limit=limit,
-                include_paths=include_paths,
-                exclude_paths=exclude_paths,
-                max_depth=max_depth,
-                max_discovery_depth=max_discovery_depth,
-                ignore_sitemap=ignore_sitemap,
-                ignore_query_params=ignore_query_params,
-                deduplicate_similar_urls=deduplicate_similar_urls,
-                regex_on_full_url=regex_on_full_url,
-                allow_backward_links=allow_backward_links,
-                allow_external_links=allow_external_links,
-                delay=delay,
+                limit=limit_to_use,
+                include_paths=include_paths_to_use,
+                exclude_paths=exclude_paths_to_use,
+                max_depth=max_depth_to_use,
+                max_discovery_depth=max_discovery_depth_to_use,
+                ignore_sitemap=ignore_sitemap_to_use,
+                ignore_query_params=ignore_query_params_to_use,
+                deduplicate_similar_urls=deduplicate_similar_urls_to_use,
+                regex_on_full_url=regex_on_full_url_to_use,
+                allow_backward_links=allow_backward_links_to_use,
+                allow_external_links=allow_external_links_to_use,
+                delay=delay_to_use,
                 # Scrape options
-                formats=formats,
-                only_main_content=only_main_content,
-                include_tags=include_tags,
-                exclude_tags=exclude_tags,
-                headers=headers,
-                wait_for=wait_for,
-                timeout=timeout,
+                formats=formats_to_use,
+                only_main_content=only_main_content_to_use,
+                include_tags=include_tags_to_use,
+                exclude_tags=exclude_tags_to_use,
+                headers=headers_to_use,
+                wait_for=wait_for_to_use,
+                timeout=timeout_to_use,
             )
             return results
 

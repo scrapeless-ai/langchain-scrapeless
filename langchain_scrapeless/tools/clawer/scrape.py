@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from scrapeless.client import Scrapeless as ScrapelessClient
 
 from langchain_scrapeless.error_messages import ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
-from langchain_scrapeless.utils import create_scrapeless_client
+from langchain_scrapeless.utils import create_scrapeless_client, format_default_value
 from langchain_scrapeless.wrappers import (
     ScrapelessCrawlerScrapeAPIWrapper,
 )
@@ -149,7 +149,7 @@ class ScrapelessCrawlerScrapeTool(BaseTool):
     def _run(
         self,
         urls: List[str],
-        formats: Optional[List[str]] = ["markdown"],
+        formats: Optional[List[str]] = None,
         only_main_content: Optional[bool] = True,
         include_tags: Optional[List[str]] = None,
         exclude_tags: Optional[List[str]] = None,
@@ -160,15 +160,23 @@ class ScrapelessCrawlerScrapeTool(BaseTool):
         """Execute the Scrapeless Crawler Scrape API to scrape a website."""
 
         try:
+            formats_to_use = format_default_value(formats, ["markdown"])
+            only_main_content_to_use = format_default_value(only_main_content, True)
+            include_tags_to_use = format_default_value(include_tags, [])
+            exclude_tags_to_use = format_default_value(exclude_tags, [])
+            headers_to_use = format_default_value(headers, {})
+            wait_for_to_use = format_default_value(wait_for, 0)
+            timeout_to_use = format_default_value(timeout, 30000)
+
             results = self.scrapeless_crawler_api_wrapper.scrape_results(
                 urls=urls,
-                formats=formats,
-                only_main_content=only_main_content,
-                include_tags=include_tags,
-                exclude_tags=exclude_tags,
-                headers=headers,
-                wait_for=wait_for,
-                timeout=timeout,
+                formats=formats_to_use,
+                only_main_content=only_main_content_to_use,
+                include_tags=include_tags_to_use,
+                exclude_tags=exclude_tags_to_use,
+                headers=headers_to_use,
+                wait_for=wait_for_to_use,
+                timeout=timeout_to_use,
             )
             return results
 

@@ -66,7 +66,6 @@ TestScrapelessDeepSerpGoogleSearchTool = create_tool_test_class(
     },
 )
 
-#
 TestScrapelessDeepSerpGoogleTrendsTool = create_tool_test_class(
     "TestScrapelessDeepSerpGoogleTrendsTool",
     ScrapelessDeepSerpGoogleTrendsTool,
