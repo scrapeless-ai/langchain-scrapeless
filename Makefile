@@ -62,3 +62,7 @@ help:
 	@echo 'test                         - run unit tests'
 	@echo 'tests                        - run unit tests'
 	@echo 'test TEST_FILE=<test_file>   - run all tests in file'
+
+
+release:
+	poetry run python scripts/release.py $(version)
