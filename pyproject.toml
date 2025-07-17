@@ -6,10 +6,11 @@ build-backend = "poetry.core.masonry.api"
 name = "langchain-scrapeless"
 version = "0.1.1"
 description = "An integration package connecting Scrapeless and LangChain"
-authors = []
+authors = ["scrapelessteam@gmail.com"]
 readme = "README.md"
 repository = "https://github.com/scrapeless-ai/langchain-scrapeless"
 license = "MIT"
+keywords = ["scrapeless", "langchain", "integration", "universal scraping api", "scraping", "crawl"]
 
 [tool.mypy]
 disallow_untyped_defs = "True"
