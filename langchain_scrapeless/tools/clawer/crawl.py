@@ -145,7 +145,7 @@ class ScrapelessCrawlerCrawlTool(BaseTool):
     with your API key, or pass `scrapeless_api_key`
     as a named parameter to the constructor.
 
-    For details, see  https://docs.apify.com/platform/integrations/langchain
+    For details, see https://docs.scrapeless.com/en/docs/browser-crawl/crawl/crawl-a-website/
 
     Example:
       .. code-block:: python
