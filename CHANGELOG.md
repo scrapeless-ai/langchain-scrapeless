@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## Unreleased
+## 0.1.4
 
 - Add the full documented AI Scraper family: ChatGPT, Perplexity, Copilot, Gemini, Google AI Mode, Google AI Overview, Grok, and Amazon Alexa.
 - Add a unified AI Scraper tool and a result lookup tool, engine-specific validation, complete JSON output, nonblocking submission, and resumable polling.
@@ -17,6 +17,10 @@ All notable changes to this project will be documented in this file. See [standa
 - Document installation from source and add a LangChain 1.x agent example.
 - Validate Google Search domains and Google Trends region codes by format and pass them through to Scrapeless.
 - Run offline tests on GitHub Actions and require them before publishing a release.
+
+- Forward Google Search filtering and search-type options to the SDK.
+- Validate release version updates and trigger PyPI publishing on published GitHub Releases.
+- Correct tool documentation references.
 
 ### [0.1.3](https://github.com/scrapeless-ai/langchain-scrapeless/compare/v0.1.2...v0.1.3)
 
