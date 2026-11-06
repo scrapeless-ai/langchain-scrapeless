@@ -210,7 +210,7 @@ class ScrapelessDeepSerpGoogleSearchTool(BaseTool):
     with your API key, or pass `scrapeless_api_key`
     as a named parameter to the constructor.
 
-    For details, see  https://docs.apify.com/platform/integrations/langchain
+    For details, see https://docs.scrapeless.com/en/docs/scraping-api/google-search/introduction/
 
     Example:
       .. code-block:: python
@@ -296,6 +296,9 @@ class ScrapelessDeepSerpGoogleSearchTool(BaseTool):
                 lr=lr,
                 tbs=tbs,
                 safe=safe,
+                nfpr=nfpr,
+                filter=filter,
+                tbm=tbm,
             )
             return results
 
