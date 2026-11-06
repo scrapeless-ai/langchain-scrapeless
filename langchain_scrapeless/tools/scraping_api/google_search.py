@@ -1,12 +1,8 @@
-import os
 from typing import Any, Dict, Literal, Optional, Type
 
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import BaseModel, Field
-from scrapeless.client import Scrapeless as ScrapelessClient
 
-from langchain_scrapeless.error_messages import ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
-from langchain_scrapeless.utils import create_scrapeless_client
 from langchain_scrapeless.wrappers import (
     ScrapelessDeepSerpAPIWrapper,
 )
@@ -53,199 +49,10 @@ class ScrapelessGoogleSearchInput(BaseModel):
         - fr for France
         """,
     )
-    google_domain: Optional[
-        Literal[
-            "google.com",
-            "google.ad",
-            "google.ae",
-            "google.com.af",
-            "google.com.ag",
-            "google.com.ai",
-            "google.al",
-            "google.am",
-            "google.co.ao",
-            "google.com.ar",
-            "google.as",
-            "google.at",
-            "google.com.au",
-            "google.az",
-            "google.ba",
-            "google.com.bd",
-            "google.be",
-            "google.bf",
-            "google.bg",
-            "google.com.bh",
-            "google.bi",
-            "google.bj",
-            "google.com.bn",
-            "google.com.bo",
-            "google.com.br",
-            "google.bs",
-            "google.bt",
-            "google.co.bw",
-            "google.by",
-            "google.com.bz",
-            "google.ca",
-            "google.com.kh",
-            "google.cd",
-            "google.cf",
-            "google.cg",
-            "google.ch",
-            "google.ci",
-            "google.co.ck",
-            "google.cl",
-            "google.cm",
-            "google.com.co",
-            "google.co.cr",
-            "google.com.cu",
-            "google.cv",
-            "google.com.cy",
-            "google.cz",
-            "google.de",
-            "google.dj",
-            "google.dk",
-            "google.dm",
-            "google.com.do",
-            "google.dz",
-            "google.com.ec",
-            "google.ee",
-            "google.com.eg",
-            "google.es",
-            "google.com.et",
-            "google.fi",
-            "google.fm",
-            "google.com.fj",
-            "google.fr",
-            "google.ga",
-            "google.ge",
-            "google.com.gh",
-            "google.com.gi",
-            "google.gl",
-            "google.gm",
-            "google.gp",
-            "google.gr",
-            "google.com.gt",
-            "google.gy",
-            "google.com.hk",
-            "google.hn",
-            "google.hr",
-            "google.ht",
-            "google.hu",
-            "google.co.id",
-            "google.iq",
-            "google.ie",
-            "google.co.il",
-            "google.co.in",
-            "google.is",
-            "google.it",
-            "google.je",
-            "google.com.jm",
-            "google.jo",
-            "google.co.jp",
-            "google.co.ke",
-            "google.ki",
-            "google.kg",
-            "google.co.kr",
-            "google.com.kw",
-            "google.kz",
-            "google.la",
-            "google.com.lb",
-            "google.li",
-            "google.lk",
-            "google.co.ls",
-            "google.lt",
-            "google.lu",
-            "google.lv",
-            "google.com.ly",
-            "google.co.ma",
-            "google.md",
-            "google.mg",
-            "google.mk",
-            "google.ml",
-            "google.com.mm",
-            "google.mn",
-            "google.ms",
-            "google.com.mt",
-            "google.mu",
-            "google.mv",
-            "google.mw",
-            "google.com.mx",
-            "google.com.my",
-            "google.co.mz",
-            "google.com.na",
-            "google.ne",
-            "google.com.ng",
-            "google.com.ni",
-            "google.nl",
-            "google.no",
-            "google.com.np",
-            "google.nr",
-            "google.nu",
-            "google.co.nz",
-            "google.com.om",
-            "google.com.pk",
-            "google.com.pa",
-            "google.com.pe",
-            "google.com.ph",
-            "google.pl",
-            "google.com.pg",
-            "google.com.pr",
-            "google.ps",
-            "google.pt",
-            "google.com.py",
-            "google.com.qa",
-            "google.ro",
-            "google.rs",
-            "google.ru",
-            "google.rw",
-            "google.com.sa",
-            "google.com.sb",
-            "google.sc",
-            "google.se",
-            "google.com.sg",
-            "google.sh",
-            "google.si",
-            "google.sk",
-            "google.com.sl",
-            "google.sn",
-            "google.sm",
-            "google.so",
-            "google.sr",
-            "google.com.sv",
-            "google.td",
-            "google.tg",
-            "google.co.th",
-            "google.com.tj",
-            "google.tk",
-            "google.tl",
-            "google.tm",
-            "google.to",
-            "google.tn",
-            "google.com.tr",
-            "google.tt",
-            "google.com.tw",
-            "google.co.tz",
-            "google.com.ua",
-            "google.co.ug",
-            "google.co.uk",
-            "google.com.uy",
-            "google.co.uz",
-            "google.com.vc",
-            "google.co.ve",
-            "google.vg",
-            "google.co.vi",
-            "google.com.vn",
-            "google.vu",
-            "google.ws",
-            "google.co.za",
-            "google.co.zm",
-            "google.co.zw",
-        ]
-    ] = Field(
+    google_domain: Optional[str] = Field(
         default="google.com",
-        description="""
-        Parameter defines the Google domain to use. It defaults to google.com.
-        """,
+        pattern=r"^google\.(?:[a-z]{2,3}|(?:co|com)\.[a-z]{2})$",
+        description="Google domain to search. Defaults to google.com.",
     )
     start: Optional[int] = Field(
         default=0,
@@ -444,32 +251,11 @@ class ScrapelessDeepSerpGoogleSearchTool(BaseTool):
         default_factory=ScrapelessDeepSerpAPIWrapper
     )
 
-    def __int__(self, scrapeless_api_key: str | None = None, **kwargs: Any) -> None:
-        """Initialize the ScrapelessUniversalScrapingTool.
-
-        Args:
-            scrapeless_api_key: The API key for the Scrapeless API.
-            **kwargs: Additional keyword arguments.
-
-        Raises:
-            ValueError: If the `SCRAPELESS_API_KEY` environment variable is not set.
-        """
-
-        scrapeless_api_key = scrapeless_api_key or os.getenv("SCRAPELESS_API_KEY")
-        if not scrapeless_api_key:
-            msg = ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
-            raise ValueError(msg)
-
-        scrapeless_client = create_scrapeless_client(
-            ScrapelessClient, scrapeless_api_key
-        )
-
-        if "scrapeless_api_key" in kwargs:
+    def __init__(self, scrapeless_api_key: str | None = None, **kwargs: Any) -> None:
+        if scrapeless_api_key and "scrapeless_deepserp_api_wrapper" not in kwargs:
             kwargs["scrapeless_deepserp_api_wrapper"] = ScrapelessDeepSerpAPIWrapper(
-                scrapeless_api_key=scrapeless_api_key,
-                scrapeless_client=scrapeless_client,
+                scrapeless_api_key=scrapeless_api_key
             )
-
         super().__init__(**kwargs)
 
     def _run(
