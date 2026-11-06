@@ -1,14 +1,14 @@
 <p align="center">
-  <a href="https://app.scrapeless.com/passport/login?redirect=%2Fquick-start&amp;utm_source=github&amp;utm_medium=referral&amp;utm_campaign=langchain-scrapeless&amp;utm_content=repository-readme"><img src="assets/langchain-integration-banner.png" alt="LangChain and Scrapeless: Google Search, Web Unlocker, Crawl, and AI Scraper through the Python SDK." width="100%" /></a>
+  <a href="https://app.scrapeless.com/passport/login?redirect=%2Fquick-start&amp;utm_source=github&amp;utm_medium=referral&amp;utm_campaign=langchain-scrapeless&amp;utm_content=repository-readme"><img src="https://raw.githubusercontent.com/scrapeless-ai/langchain-scrapeless/eb4c55d29258927a5f6b6b974b666e95ede9aafd/assets/langchain-integration-banner.png" alt="LangChain and Scrapeless: Google Search, Web Unlocker, Crawl, and AI Scraper through the Python SDK." width="100%" /></a>
 </p>
 
 # Use Scrapeless in LangChain
 
 <p align="left">
-  <a href="https://app.scrapeless.com/passport/login?redirect=%2Fquick-start&amp;utm_source=github&amp;utm_medium=referral&amp;utm_campaign=langchain-scrapeless&amp;utm_content=repository-readme"><img src="assets/start-free.png" alt="Get started with Scrapeless" width="161" height="28" /></a>
-  <a href="https://www.scrapeless.com/en/blog?utm_source=github&amp;utm_medium=referral&amp;utm_campaign=langchain-scrapeless&amp;utm_content=repository-readme"><img src="assets/blog.png" alt="Read Scrapeless guides" width="168" height="28" /></a>
-  <a href="https://x.com/Scrapelessteam?utm_source=github&amp;utm_medium=referral&amp;utm_campaign=langchain-scrapeless&amp;utm_content=repository-readme"><img src="assets/x.png" alt="Follow Scrapeless on X" width="140" height="28" /></a>
-  <a href="https://www.linkedin.com/company/scrapeless/?utm_source=github&amp;utm_medium=referral&amp;utm_campaign=langchain-scrapeless&amp;utm_content=repository-readme"><img src="assets/linkedin.png" alt="Follow Scrapeless on LinkedIn" width="190" height="28" /></a>
+  <a href="https://app.scrapeless.com/passport/login?redirect=%2Fquick-start&amp;utm_source=github&amp;utm_medium=referral&amp;utm_campaign=langchain-scrapeless&amp;utm_content=repository-readme"><img src="https://raw.githubusercontent.com/scrapeless-ai/langchain-scrapeless/eb4c55d29258927a5f6b6b974b666e95ede9aafd/assets/start-free.png" alt="Get started with Scrapeless" width="161" height="28" /></a>
+  <a href="https://www.scrapeless.com/en/blog?utm_source=github&amp;utm_medium=referral&amp;utm_campaign=langchain-scrapeless&amp;utm_content=repository-readme"><img src="https://raw.githubusercontent.com/scrapeless-ai/langchain-scrapeless/eb4c55d29258927a5f6b6b974b666e95ede9aafd/assets/blog.png" alt="Read Scrapeless guides" width="168" height="28" /></a>
+  <a href="https://x.com/Scrapelessteam?utm_source=github&amp;utm_medium=referral&amp;utm_campaign=langchain-scrapeless&amp;utm_content=repository-readme"><img src="https://raw.githubusercontent.com/scrapeless-ai/langchain-scrapeless/eb4c55d29258927a5f6b6b974b666e95ede9aafd/assets/x.png" alt="Follow Scrapeless on X" width="140" height="28" /></a>
+  <a href="https://www.linkedin.com/company/scrapeless/?utm_source=github&amp;utm_medium=referral&amp;utm_campaign=langchain-scrapeless&amp;utm_content=repository-readme"><img src="https://raw.githubusercontent.com/scrapeless-ai/langchain-scrapeless/eb4c55d29258927a5f6b6b974b666e95ede9aafd/assets/linkedin.png" alt="Follow Scrapeless on LinkedIn" width="190" height="28" /></a>
 </p>
 
 Use Scrapeless tools in LangChain workflows to search Google, extract pages with Web Unlocker, collect website content with Crawl, and capture AI-generated answers with AI Scraper through the Python SDK.
@@ -27,19 +27,14 @@ Use Scrapeless tools in LangChain workflows to search Google, extract pages with
 
 ## 📦 Installation
 
-Use Python 3.10 or later. Until the matching PyPI update is published, install the reviewed source from the directory containing `pyproject.toml`:
+Use Python 3.10 or later. Install this release from PyPI:
 
 ```bash
-python -m pip install .
+python -m pip install "langchain-scrapeless==0.1.4"
 ```
 
-After the matching package release is available, install it from PyPI:
+To install from a source checkout, run `python -m pip install .` from the directory containing `pyproject.toml`.
 
-```bash
-python -m pip install -U langchain-scrapeless
-```
-
-The existing `0.1.3` release does not include the AI Scraper tools below.
 For the optional LangChain 1.x agent examples, also install:
 
 ```bash
