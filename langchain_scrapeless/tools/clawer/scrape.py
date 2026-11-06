@@ -1,12 +1,9 @@
-import os
 from typing import Any, Dict, List, Literal, Optional, Type
 
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import BaseModel, Field
-from scrapeless.client import Scrapeless as ScrapelessClient
 
-from langchain_scrapeless.error_messages import ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
-from langchain_scrapeless.utils import create_scrapeless_client, format_default_value
+from langchain_scrapeless.utils import format_default_value
 from langchain_scrapeless.wrappers import (
     ScrapelessCrawlerScrapeAPIWrapper,
 )
@@ -60,6 +57,12 @@ class ScrapelessCrawlerScrapeInput(BaseModel):
     timeout: Optional[int] = Field(
         description="Timeout in milliseconds for the request", default=30000
     )
+    poll_timeout: float = Field(
+        default=180,
+        gt=0,
+        allow_inf_nan=False,
+        description="Maximum polling window in seconds after the batch is submitted.",
+    )
 
 
 class ScrapelessCrawlerScrapeTool(BaseTool):
@@ -69,7 +72,7 @@ class ScrapelessCrawlerScrapeTool(BaseTool):
     with your API key, or pass `scrapeless_api_key`
     as a named parameter to the constructor.
 
-    For details, see  https://docs.apify.com/platform/integrations/langchain
+    For details, see https://docs.scrapeless.com/en/docs/browser-crawl/crawl/batch-scrape/
 
     Example:
       .. code-block:: python
@@ -116,34 +119,11 @@ class ScrapelessCrawlerScrapeTool(BaseTool):
         default_factory=ScrapelessCrawlerScrapeAPIWrapper
     )
 
-    def __int__(self, scrapeless_api_key: str | None = None, **kwargs: Any) -> None:
-        """Initialize the ScrapelessCrawlerScrapeTool.
-
-        Args:
-            scrapeless_api_key: The API key for the Scrapeless API.
-            **kwargs: Additional keyword arguments.
-
-        Raises:
-            ValueError: If the `SCRAPELESS_API_KEY` environment variable is not set.
-        """
-
-        scrapeless_api_key = scrapeless_api_key or os.getenv("SCRAPELESS_API_KEY")
-        if not scrapeless_api_key:
-            msg = ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
-            raise ValueError(msg)
-
-        scrapeless_client = create_scrapeless_client(
-            ScrapelessClient, scrapeless_api_key
-        )
-
-        if "scrapeless_api_key" in kwargs:
-            kwargs["scrapeless_crawler_api_wrapper"] = (
-                ScrapelessCrawlerScrapeAPIWrapper(
-                    scrapeless_api_key=scrapeless_api_key,
-                    scrapeless_client=scrapeless_client,
-                )
+    def __init__(self, scrapeless_api_key: str | None = None, **kwargs: Any) -> None:
+        if scrapeless_api_key and "scrapeless_crawler_api_wrapper" not in kwargs:
+            kwargs["scrapeless_crawler_api_wrapper"] = ScrapelessCrawlerScrapeAPIWrapper(
+                scrapeless_api_key=scrapeless_api_key
             )
-
         super().__init__(**kwargs)
 
     def _run(
@@ -156,6 +136,7 @@ class ScrapelessCrawlerScrapeTool(BaseTool):
         headers: Optional[Dict[str, str]] = None,
         wait_for: Optional[int] = 0,
         timeout: Optional[int] = 30000,
+        poll_timeout: float = 180,
     ) -> Dict[str, Any]:
         """Execute the Scrapeless Crawler Scrape API to scrape a website."""
 
@@ -177,6 +158,7 @@ class ScrapelessCrawlerScrapeTool(BaseTool):
                 headers=headers_to_use,
                 wait_for=wait_for_to_use,
                 timeout=timeout_to_use,
+                poll_timeout=poll_timeout,
             )
             return results
 
