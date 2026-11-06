@@ -1,12 +1,8 @@
-import os
 from typing import Any, Dict, Literal, Optional, Type
 
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import BaseModel, Field
-from scrapeless.client import Scrapeless as ScrapelessClient
 
-from langchain_scrapeless.error_messages import ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
-from langchain_scrapeless.utils import create_scrapeless_client
 from langchain_scrapeless.wrappers import ScrapelessUniversalScrapingAPIWrapper
 
 
@@ -180,34 +176,16 @@ class ScrapelessUniversalScrapingTool(BaseTool):
         Field(default_factory=ScrapelessUniversalScrapingAPIWrapper)
     )
 
-    def __int__(self, scrapeless_api_key: str | None = None, **kwargs: Any) -> None:
-        """Initialize the ScrapelessUniversalScrapingTool.
-
-        Args:
-            scrapeless_api_key: The API key for the Scrapeless API.
-            **kwargs: Additional keyword arguments.
-
-        Raises:
-            ValueError: If the `SCRAPELESS_API_KEY` environment variable is not set.
-        """
-
-        scrapeless_api_key = scrapeless_api_key or os.getenv("SCRAPELESS_API_KEY")
-        if not scrapeless_api_key:
-            msg = ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
-            raise ValueError(msg)
-
-        scrapeless_client = create_scrapeless_client(
-            ScrapelessClient, scrapeless_api_key
-        )
-
-        if "scrapeless_api_key" in kwargs:
+    def __init__(self, scrapeless_api_key: str | None = None, **kwargs: Any) -> None:
+        if (
+            scrapeless_api_key
+            and "scrapeless_universal_scraping_api_wrapper" not in kwargs
+        ):
             kwargs["scrapeless_universal_scraping_api_wrapper"] = (
                 ScrapelessUniversalScrapingAPIWrapper(
-                    scrapeless_api_key=scrapeless_api_key,
-                    scrapeless_client=scrapeless_client,
+                    scrapeless_api_key=scrapeless_api_key
                 )
             )
-
         super().__init__(**kwargs)
 
     def _run(
