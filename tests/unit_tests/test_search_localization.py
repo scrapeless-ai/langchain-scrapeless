@@ -43,3 +43,20 @@ def test_localization_is_validated_and_forwarded(
     with pytest.raises(ValidationError):
         tool.invoke({"q": "Scrapeless", field: invalid})
     assert received == [value]
+
+
+def test_search_options_reach_sdk_request(monkeypatch):
+    tool = ScrapelessDeepSerpGoogleSearchTool(scrapeless_api_key="offline-test-key")
+    service = tool.scrapeless_deepserp_api_wrapper.scrapeless_client.scraping
+    received = []
+
+    def scrape(request):
+        received.append(request.input)
+        return {"organic_results": []}
+
+    monkeypatch.setattr(service, "scrape", scrape)
+    tool.invoke({"q": "HTTP caching", "nfpr": "1", "filter": "0", "tbm": "nws"})
+    assert len(received) == 1
+    assert {key: received[0][key] for key in ("nfpr", "filter", "tbm")} == {
+        "nfpr": "1", "filter": "0", "tbm": "nws"
+    }
