@@ -1,6 +1,7 @@
 from langchain_tests.unit_tests import ToolsUnitTests
 
 from langchain_scrapeless.tools import (
+    ScrapelessChatGPTScraperTool,
     ScrapelessCrawlerCrawlTool,
     ScrapelessCrawlerScrapeTool,
     ScrapelessDeepSerpGoogleSearchTool,
@@ -17,7 +18,7 @@ def create_tool_test_class(name, tool_cls, example_args):
 
         @property
         def tool_constructor_params(self):
-            return {}
+            return {"scrapeless_api_key": "offline-test-key"}
 
         @property
         def tool_invoke_params_example(self):
@@ -25,6 +26,13 @@ def create_tool_test_class(name, tool_cls, example_args):
 
     _TestTool.__name__ = name
     return _TestTool
+
+
+TestScrapelessChatGPTScraperTool = create_tool_test_class(
+    "TestScrapelessChatGPTScraperTool",
+    ScrapelessChatGPTScraperTool,
+    {"prompt": "Summarize the supplied web search snippets."},
+)
 
 
 TestScrapelessUniversalScrapingTool = create_tool_test_class(

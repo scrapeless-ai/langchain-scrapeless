@@ -1,7 +1,10 @@
+import math
+import time
 from typing import Any, Dict, List, Literal, Optional
 
+from langchain_core.tools import ToolException
 from langchain_core.utils import get_from_dict_or_env
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, SecretStr, model_validator
 from scrapeless import Scrapeless
 from scrapeless.types import (
     CrawlParams,
@@ -20,11 +23,10 @@ SCRAPELESS_API_URL = "https://api.scrapeless.com"
 class ScrapelessAPIWrapper(BaseModel):
     """Base wrapper for Scrapeless API."""
 
-    # allow arbitrary types in the model config for the apify client fields
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(arbitrary_types_allowed=True, hide_input_in_errors=True)
 
-    scrapeless_api_key: str | None = None
-    scrapeless_client: Scrapeless
+    scrapeless_api_key: SecretStr | None = Field(default=None, exclude=True, repr=False)
+    scrapeless_client: Scrapeless = Field(exclude=True, repr=False)
 
     @model_validator(mode="before")
     @classmethod
@@ -44,9 +46,14 @@ class ScrapelessAPIWrapper(BaseModel):
         if not scrapeless_api_key:
             raise ValueError("Scrapeless API key must be provided.")
 
-        values["scrapeless_api_key"] = scrapeless_api_key
+        secret = (
+            scrapeless_api_key
+            if isinstance(scrapeless_api_key, SecretStr)
+            else SecretStr(scrapeless_api_key)
+        )
+        values["scrapeless_api_key"] = secret
         values["scrapeless_client"] = create_scrapeless_client(
-            Scrapeless, scrapeless_api_key
+            Scrapeless, secret.get_secret_value()
         )
 
         return values
@@ -288,6 +295,7 @@ class ScrapelessCrawlerScrapeAPIWrapper(ScrapelessAPIWrapper):
         headers: Optional[Dict[str, str]] = None,
         wait_for: Optional[int] = 0,
         timeout: Optional[int] = 30000,
+        poll_timeout: float = 180,
     ) -> Dict:
         """Scrape the results from the URLs.
 
@@ -311,6 +319,8 @@ class ScrapelessCrawlerScrapeAPIWrapper(ScrapelessAPIWrapper):
                  The timeout in milliseconds for the request.
         """
 
+        if not math.isfinite(poll_timeout) or poll_timeout <= 0:
+            raise ValueError("poll_timeout must be a positive finite number of seconds.")
         data = ScrapeParams(
             waitFor=wait_for,
             timeout=timeout,
@@ -327,10 +337,34 @@ class ScrapelessCrawlerScrapeAPIWrapper(ScrapelessAPIWrapper):
             },
         )
 
-        response = self.scrapeless_client.scraping_crawl.scrape.batch_scrape_urls(
-            urls, data
+        service = self.scrapeless_client.scraping_crawl.scrape
+        task = service.async_batch_scrape_urls(urls, data)
+        task_id = task.get("id")
+        if not task_id:
+            raise ToolException("Batch scrape did not return a task ID.")
+
+        deadline = time.monotonic() + poll_timeout
+        while time.monotonic() < deadline:
+            try:
+                result = service.check_batch_scrape_status(task_id)
+            except Exception as error:
+                raise ToolException(
+                    f"Could not retrieve batch scrape task {task_id}. "
+                    "Check this task before submitting another scrape."
+                ) from error
+            status = result.get("status")
+            if status in {"completed", "failed", "cancelled", "canceled"}:
+                return result
+            if status not in {"scraping", "pending", "queued", "active", "running", "waiting"}:
+                raise ToolException(
+                    f"Unexpected batch scrape status {status!r}. Task ID: {task_id}"
+                )
+            remaining = deadline - time.monotonic()
+            time.sleep(max(0, min(2, remaining)))
+        raise ToolException(
+            f"Batch scrape polling timed out. Task ID: {task_id}. "
+            "Retrieve this task through the SDK before submitting another scrape."
         )
-        return response
 
 
 class ScrapelessCrawlerCrawlAPIWrapper(ScrapelessAPIWrapper):

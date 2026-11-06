@@ -1,13 +1,10 @@
-import os
 from typing import Any, Dict, List, Literal, Optional, Type
 
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import BaseModel, Field
-from scrapeless.client import Scrapeless as ScrapelessClient
 from scrapeless.types import CrawlStatusResponse
 
-from langchain_scrapeless.error_messages import ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
-from langchain_scrapeless.utils import create_scrapeless_client, format_default_value
+from langchain_scrapeless.utils import format_default_value
 from langchain_scrapeless.wrappers import (
     ScrapelessCrawlerCrawlAPIWrapper,
 )
@@ -22,23 +19,18 @@ class ScrapelessCrawlerCrawlInput(BaseModel):
     )
     include_paths: Optional[List[str]] = Field(
         description="""
-        URL pathname regex patterns that include matching URLs in the crawl. 
-        Only the paths that match the specified patterns 
-            will be included in the response. 
-        For example, if you set 'includePaths': ['blog/.*'] 
-            for the base URL firecrawl.dev, 
-        only results matching that pattern will be included, 
-        such as https://www.scrapeless.com/blog/firecrawl-launch-week-1-recap.
+        URL pathname regex patterns that include matching URLs in the crawl.
+        Only URLs whose paths match a specified pattern are included.
+        For example, 'include_paths': ['blog/.*'] includes /blog/post
+        for the base URL https://example.com.
         """,
         default=None,
     )
     exclude_paths: Optional[List[str]] = Field(
         description="""
-        URL pathname regex patterns that exclude matching URLs from the crawl. 
-        For example, if you set 'excludePaths': ['blog/.*'] 
-            for the base URL firecrawl.dev, 
-        any results matching that pattern will be excluded, 
-        such as https://www.scrapeless.com/blog/firecrawl-launch-week-1-recap.
+        URL pathname regex patterns that exclude matching URLs from the crawl.
+        For example, 'exclude_paths': ['blog/.*'] excludes /blog/post
+        for the base URL https://example.com.
         """,
         default=None,
     )
@@ -153,7 +145,7 @@ class ScrapelessCrawlerCrawlTool(BaseTool):
     with your API key, or pass `scrapeless_api_key`
     as a named parameter to the constructor.
 
-    For details, see  https://docs.apify.com/platform/integrations/langchain
+    For details, see https://docs.scrapeless.com/en/docs/browser-crawl/crawl/crawl-a-website/
 
     Example:
       .. code-block:: python
@@ -198,32 +190,11 @@ class ScrapelessCrawlerCrawlTool(BaseTool):
         default_factory=ScrapelessCrawlerCrawlAPIWrapper
     )
 
-    def __int__(self, scrapeless_api_key: str | None = None, **kwargs: Any) -> None:
-        """Initialize the ScrapelessCrawlerScrapeTool.
-
-        Args:
-            scrapeless_api_key: The API key for the Scrapeless API.
-            **kwargs: Additional keyword arguments.
-
-        Raises:
-            ValueError: If the `SCRAPELESS_API_KEY` environment variable is not set.
-        """
-
-        scrapeless_api_key = scrapeless_api_key or os.getenv("SCRAPELESS_API_KEY")
-        if not scrapeless_api_key:
-            msg = ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
-            raise ValueError(msg)
-
-        scrapeless_client = create_scrapeless_client(
-            ScrapelessClient, scrapeless_api_key
-        )
-
-        if "scrapeless_api_key" in kwargs:
+    def __init__(self, scrapeless_api_key: str | None = None, **kwargs: Any) -> None:
+        if scrapeless_api_key and "scrapeless_crawler_api_wrapper" not in kwargs:
             kwargs["scrapeless_crawler_api_wrapper"] = ScrapelessCrawlerCrawlAPIWrapper(
-                scrapeless_api_key=scrapeless_api_key,
-                scrapeless_client=scrapeless_client,
+                scrapeless_api_key=scrapeless_api_key
             )
-
         super().__init__(**kwargs)
 
     def _run(

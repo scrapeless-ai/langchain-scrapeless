@@ -1,13 +1,9 @@
-import os
 from enum import Enum
 from typing import Any, Dict, Literal, Optional, Type
 
 from langchain_core.tools import BaseTool, ToolException
 from pydantic import BaseModel, Field
-from scrapeless.client import Scrapeless as ScrapelessClient
 
-from langchain_scrapeless.error_messages import ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
-from langchain_scrapeless.utils import create_scrapeless_client
 from langchain_scrapeless.wrappers import (
     ScrapelessDeepSerpAPIWrapper,
 )
@@ -170,7 +166,7 @@ class ScrapelessGoogleTrendsInput(BaseModel):
         
         - Dates from 2004 to present:
             yyyy-mm-dd yyyy-mm-dd
-            e.g. 2021-10-15 2022-05-25
+            e.g. YYYY-MM-DD YYYY-MM-DD
         
         - Dates with hours within a week range:
             yyyy-mm-ddThh yyyy-mm-ddThh
@@ -192,67 +188,10 @@ class ScrapelessGoogleTrendsInput(BaseModel):
         default="420", description="Time zone offset. Default is 420."
     )
 
-    geo: Optional[
-        Literal[
-            "",
-            "AR",
-            "AU",
-            "AT",
-            "BE",
-            "BR",
-            "CA",
-            "CL",
-            "CO",
-            "CZ",
-            "DK",
-            "EG",
-            "FI",
-            "FR",
-            "DE",
-            "GR",
-            "HK",
-            "HU",
-            "IN",
-            "ID",
-            "IE",
-            "IL",
-            "IT",
-            "JP",
-            "KE",
-            "MY",
-            "MX",
-            "NL",
-            "NZ",
-            "NG",
-            "NO",
-            "PE",
-            "PH",
-            "PL",
-            "PT",
-            "RO",
-            "RU",
-            "SA",
-            "SG",
-            "ZA",
-            "KR",
-            "ES",
-            "SE",
-            "CH",
-            "TW",
-            "TH",
-            "TR",
-            "UA",
-            "GB",
-            "US",
-            "VN",
-        ]
-    ] = Field(
+    geo: Optional[str] = Field(
         default=None,
-        description="""
-        Parameter defines the location from where you want the search to originate. 
-        It defaults to Worldwide 
-            (activated when the value of geo parameter is not set or empty).
-        """,
+        pattern=r"^(?:[A-Z]{2})?$",
+        description="Two-letter country code. Omit it or pass an empty string for worldwide results.",
     )
 
     cat: Optional[CategoryEnum] = Field(
@@ -271,7 +210,7 @@ class ScrapelessDeepSerpGoogleTrendsTool(BaseTool):
     with your API key, or pass `scrapeless_api_key`
     as a named parameter to the constructor.
 
-    For details, see  https://docs.apify.com/platform/integrations/langchain
+    For details, see https://docs.scrapeless.com/en/docs/scraping-api/introduction/
 
     Example:
       .. code-block:: python
@@ -319,32 +258,11 @@ class ScrapelessDeepSerpGoogleTrendsTool(BaseTool):
         default_factory=ScrapelessDeepSerpAPIWrapper
     )
 
-    def __int__(self, scrapeless_api_key: str | None = None, **kwargs: Any) -> None:
-        """Initialize the ScrapelessDeepSerpGoogleTrendsTool.
-
-        Args:
-            scrapeless_api_key: The API key for the Scrapeless API.
-            **kwargs: Additional keyword arguments.
-
-        Raises:
-            ValueError: If the `SCRAPELESS_API_KEY` environment variable is not set.
-        """
-
-        scrapeless_api_key = scrapeless_api_key or os.getenv("SCRAPELESS_API_KEY")
-        if not scrapeless_api_key:
-            msg = ERROR_SCRAPELESS_TOKEN_ENV_VAR_NOT_SET
-            raise ValueError(msg)
-
-        scrapeless_client = create_scrapeless_client(
-            ScrapelessClient, scrapeless_api_key
-        )
-
-        if "scrapeless_api_key" in kwargs:
+    def __init__(self, scrapeless_api_key: str | None = None, **kwargs: Any) -> None:
+        if scrapeless_api_key and "scrapeless_deepserp_api_wrapper" not in kwargs:
             kwargs["scrapeless_deepserp_api_wrapper"] = ScrapelessDeepSerpAPIWrapper(
-                scrapeless_api_key=scrapeless_api_key,
-                scrapeless_client=scrapeless_client,
+                scrapeless_api_key=scrapeless_api_key
             )
-
         super().__init__(**kwargs)
 
     def _run(

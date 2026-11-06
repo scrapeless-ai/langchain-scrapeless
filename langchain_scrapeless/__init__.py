@@ -1,5 +1,17 @@
 from importlib import metadata
 
+from langchain_scrapeless.tools.ai_scraper import (
+    ScrapelessAIScraperResultTool,
+    ScrapelessAIScraperTool,
+    ScrapelessAlexaScraperTool,
+    ScrapelessCopilotScraperTool,
+    ScrapelessGeminiScraperTool,
+    ScrapelessGoogleAIModeScraperTool,
+    ScrapelessGoogleAIOverviewScraperTool,
+    ScrapelessGrokScraperTool,
+    ScrapelessPerplexityScraperTool,
+)
+from langchain_scrapeless.tools.chatgpt_scraper import ScrapelessChatGPTScraperTool
 from langchain_scrapeless.tools.clawer import (
     ScrapelessCrawlerCrawlTool,
     ScrapelessCrawlerScrapeTool,
@@ -27,6 +39,16 @@ except metadata.PackageNotFoundError:
 del metadata  # optional, avoids polluting the results of dir(__package__)
 
 __all__ = [
+    "ScrapelessAIScraperTool",
+    "ScrapelessAIScraperResultTool",
+    "ScrapelessPerplexityScraperTool",
+    "ScrapelessCopilotScraperTool",
+    "ScrapelessGeminiScraperTool",
+    "ScrapelessGoogleAIModeScraperTool",
+    "ScrapelessGoogleAIOverviewScraperTool",
+    "ScrapelessGrokScraperTool",
+    "ScrapelessAlexaScraperTool",
+    "ScrapelessChatGPTScraperTool",
     "ScrapelessDeepSerpGoogleSearchTool",
     "ScrapelessDeepSerpGoogleTrendsTool",
     "ScrapelessUniversalScrapingTool",

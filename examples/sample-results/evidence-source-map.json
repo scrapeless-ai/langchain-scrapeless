@@ -1,0 +1,62 @@
+{
+  "question": "How do Cache-Control and ETag work together in HTTP caching?",
+  "sources": [
+    {
+      "id": "S1",
+      "title": "HTTP caching - HTTP | MDN",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching",
+      "excerpts": [
+        {
+          "start": 0,
+          "end": 3049
+        },
+        {
+          "start": 5645,
+          "end": 8837
+        },
+        {
+          "start": 14552,
+          "end": 18240
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "title": "Cache-Control header - HTTP | MDN",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control",
+      "excerpts": [
+        {
+          "start": 0,
+          "end": 2686
+        },
+        {
+          "start": 8061,
+          "end": 11458
+        },
+        {
+          "start": 24564,
+          "end": 27867
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "title": "ETag header - HTTP | MDN",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag",
+      "excerpts": [
+        {
+          "start": 0,
+          "end": 3017
+        },
+        {
+          "start": 1576,
+          "end": 5067
+        },
+        {
+          "start": 3654,
+          "end": 7081
+        }
+      ]
+    }
+  ]
+}
